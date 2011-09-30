@@ -1,0 +1,6 @@
+1. $ java TheCube -mode=fildefer | -mode=facesvisibles
+2. 1 cube = 8 lignes de 3 floattant sur fichier d'entrée
+3. à l'aide des boutons tourner dans l'espace(centre cube immobile)
+4. afficher après chaque usage de bouton
+4'. Perspective ?
+This file was modified by IntelliJ IDEA 10.5.2 for binding GitHub repository
