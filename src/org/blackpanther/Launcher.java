@@ -1,6 +1,6 @@
 package org.blackpanther;
 
-import org.blackpanther.model.Cube;
+import org.blackpanther.math.Cube;
 import org.blackpanther.render.CubeRender;
 import org.blackpanther.render.CubeScene;
 
@@ -33,7 +33,7 @@ public class Launcher {
         final Dimension drawingAreaDimension = new Dimension(500, 500);
         final Cube cube = new Cube();
         final CubeRender renderer = new CubeRender(
-                cube, 40,
+                cube, 30,
                 drawingAreaDimension);
         final CubeScene scene = new CubeScene(renderer, drawingAreaDimension);
 

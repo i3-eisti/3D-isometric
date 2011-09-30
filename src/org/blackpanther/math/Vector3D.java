@@ -1,4 +1,4 @@
-package org.blackpanther.model;
+package org.blackpanther.math;
 
 /**
  * @author MACHIZAUD Andréa
@@ -8,14 +8,14 @@ public class Vector3D {
     private static final java.util.logging.Logger logger =
             java.util.logging.Logger.getLogger(Vector3D.class.getCanonicalName());
 
-    private final int[] chunks;
+    private final float[] chunks;
 
     public Vector3D(
-            final int x,
-            final int y,
-            final int z
+            final float x,
+            final float y,
+            final float z
     ) {
-        chunks = new int[]{x,y,z};
+        chunks = new float[]{x,y,z};
     }
 
     public Vector3D(Point3D origin, Point3D destination) {
@@ -26,15 +26,15 @@ public class Vector3D {
         );
     }
 
-    public final int getX(){
+    public final float getX(){
         return chunks[0];
     }
 
-    public final int getY(){
+    public final float getY(){
         return chunks[1];
     }
 
-    public final int getZ(){
+    public final float getZ(){
         return chunks[2];
     }
 

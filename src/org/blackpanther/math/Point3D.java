@@ -1,4 +1,4 @@
-package org.blackpanther.model;
+package org.blackpanther.math;
 
 /**
  * @author MACHIZAUD Andréa
@@ -8,29 +8,28 @@ public class Point3D {
     private static final java.util.logging.Logger logger =
             java.util.logging.Logger.getLogger(Point3D.class.getCanonicalName());
 
-    private int[] coordinate;
+    private float[] coordinate;
 
-    @SuppressWarnings("unchecked")
     public Point3D(
-            final int x,
-            final int y,
-            final int z
+            final float x,
+            final float y,
+            final float z
     ) {
-        coordinate = new int[3];
+        coordinate = new float[3];
         coordinate[0] = x;
         coordinate[1] = y;
         coordinate[2] = z;
     }
 
-    public final int getX(){
+    public final float getX(){
         return coordinate[0];
     }
 
-    public final int getY(){
+    public final float getY(){
         return coordinate[1];
     }
 
-    public final int getZ(){
+    public final float getZ(){
         return coordinate[2];
     }
 }

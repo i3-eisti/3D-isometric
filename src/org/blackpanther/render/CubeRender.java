@@ -1,14 +1,13 @@
 package org.blackpanther.render;
 
-import org.blackpanther.model.Cube;
-import org.blackpanther.model.Point3D;
-import org.blackpanther.model.Vector3D;
+import org.blackpanther.math.Cube;
+import org.blackpanther.math.Point3D;
+import org.blackpanther.math.Vector3D;
 
 import java.awt.*;
-import java.awt.geom.Point2D;
 import java.awt.image.BufferedImage;
 
-import static org.blackpanther.model.Cube.*;
+import static org.blackpanther.math.Cube.*;
 
 /**
  * @author MACHIZAUD AndrÃ©a
@@ -23,13 +22,23 @@ public class CubeRender {
         LINE
     }
 
-    /** Buffer oÃ¹ l'on dessine */
+    /**
+     * Buffer où l'on dessine
+     */
     private final BufferedImage imgBuffer;
-    /** Référence vers un modÃ¨le de cube */
+    /**
+     * Ecart avec le bord
+     */
+    private int padding;
+    /**
+     * Référence vers un modèle de cube
+     */
     private final Cube refCube;
     private final int cubeSide;
     private final Point3D cubeOrigin;
-    /** Cache des 2 vecteurs utiles pour calculer la normale des 6 faces */
+    /**
+     * Cache des 2 vecteurs utiles pour calculer la normale des 6 faces
+     */
     private final Vector3D[][] normalVectors = new Vector3D[6][2];
 
     private DrawMode mode = DrawMode.LINE;
@@ -45,12 +54,14 @@ public class CubeRender {
                 BufferedImage.TYPE_INT_ARGB
         );
 
+        padding = 40;
+
         refCube = cube;
         cubeSide = sideSize;
         cubeOrigin = new Point3D(
-                ( dimension.width  - cubeSide ) / 2,
-                ( dimension.height - cubeSide ) / 2,
-                0
+                (dimension.width - cubeSide) / 2f,
+                (dimension.height - cubeSide) / 2f,
+                0f
         );
 
         //cache vectors necessary to compute normal for each face
@@ -77,129 +88,173 @@ public class CubeRender {
     public final void render() {
         final Graphics2D painter = (Graphics2D) imgBuffer.getGraphics();
 
-        final Point3D[] points = refCube.getPoints();
+        //render fixed referential axes
+        painter.setColor(Color.BLACK);
 
+        //forget constant, just some padding
+        //abscissa axe
+        painter.drawLine(
+                padding, imgBuffer.getHeight() - padding,
+                imgBuffer.getWidth() - 2 * padding, imgBuffer.getHeight() - padding
+        );
+        painter.drawString(
+                "Abscissa",
+                5 + imgBuffer.getWidth() - 2 * padding, imgBuffer.getHeight() - padding
+        );
+        //ordinate axe
+        painter.drawLine(
+                padding, imgBuffer.getHeight() - padding,
+                padding, padding
+        );
+        painter.drawString(
+                "Ordinate",
+                padding, padding - 5
+        );
+        //height axe
+        painter.drawOval(
+                (int) (padding * .75f), imgBuffer.getHeight() - (int) (padding * 1.25f),
+                padding / 2, padding / 2
+        );
+        painter.drawString(
+                "Height",
+                (int) (padding * 1.25f), imgBuffer.getHeight() - (int) (padding * .5f)
+        );
+
+        final Point3D[] mathPoints = refCube.getPoints();
+        final Point[] screenPoints = new Point[mathPoints.length];
+
+        //first translate fixed referential to cube referential,
+        // then apply change from math to screen referential
+        for (int pointCode = screenPoints.length - 1; pointCode-- > 0; ) {
+            screenPoints[pointCode] =
+                    math2pixel(
+                            fixedReferential(
+                                    expand(mathPoints[pointCode], cubeSide / 2f)));
+        }
+
+        //compute for each side if it should be drawn or not
+        // i.e side's normal vector's z-component must be > 0
         for (int face = normalVectors.length; face-- > 0; ) {
             Vector3D[] faceVector = normalVectors[face];
 
             Vector3D normal = faceVector[0].normal(faceVector[1]);
 
             //face is visible
-            if( normal.getZ() > 0 ) {
+            if (normal.getZ() > 0) {
 
-                switch (face){
+                switch (face) {
                     case ABFE:
                         logger.info("Face ABFE is visible");
-                    	painter.drawLine(
-                                points[A].getX(), points[A].getY(),
-                                points[B].getX(), points[B].getY()
+                        painter.drawLine(
+                                screenPoints[A].x, screenPoints[A].y,
+                                screenPoints[B].x, screenPoints[B].y
                         );
-                    	painter.drawLine(
-                                points[B].getX(), points[B].getY(),
-                                points[F].getX(), points[F].getY()
+                        painter.drawLine(
+                                screenPoints[B].x, screenPoints[B].y,
+                                screenPoints[F].x, screenPoints[F].y
                         );
-                    	painter.drawLine(
-                                points[F].getX(), points[F].getY(),
-                                points[E].getX(), points[E].getY()
+                        painter.drawLine(
+                                screenPoints[F].x, screenPoints[F].y,
+                                screenPoints[E].x, screenPoints[E].y
                         );
-                    	painter.drawLine(
-                                points[E].getX(), points[E].getY(),
-                                points[A].getX(), points[A].getY()
+                        painter.drawLine(
+                                screenPoints[E].x, screenPoints[E].y,
+                                screenPoints[A].x, screenPoints[A].y
                         );
                         break;
                     case ABCD:
                         logger.info("Face ABCD is visible");
-                    	painter.drawLine(
-                                points[A].getX(), points[A].getY(),
-                                points[B].getX(), points[B].getY()
+                        painter.drawLine(
+                                screenPoints[A].x, screenPoints[A].y,
+                                screenPoints[B].x, screenPoints[B].y
                         );
-                    	painter.drawLine(
-                                points[B].getX(), points[B].getY(),
-                                points[C].getX(), points[C].getY()
+                        painter.drawLine(
+                                screenPoints[B].x, screenPoints[B].y,
+                                screenPoints[C].x, screenPoints[C].y
                         );
-                    	painter.drawLine(
-                                points[C].getX(), points[C].getY(),
-                                points[D].getX(), points[D].getY()
+                        painter.drawLine(
+                                screenPoints[C].x, screenPoints[C].y,
+                                screenPoints[D].x, screenPoints[D].y
                         );
-                    	painter.drawLine(
-                                points[D].getX(), points[D].getY(),
-                                points[A].getX(), points[A].getY()
+                        painter.drawLine(
+                                screenPoints[D].x, screenPoints[D].y,
+                                screenPoints[A].x, screenPoints[A].y
                         );
                         break;
                     case BCGF:
                         logger.info("Face BCGF is visible");
-                    	painter.drawLine(
-                                points[F].getX(), points[F].getY(),
-                                points[B].getX(), points[B].getY()
+                        painter.drawLine(
+                                screenPoints[F].x, screenPoints[F].y,
+                                screenPoints[B].x, screenPoints[B].y
                         );
-                    	painter.drawLine(
-                                points[B].getX(), points[B].getY(),
-                                points[C].getX(), points[C].getY()
+                        painter.drawLine(
+                                screenPoints[B].x, screenPoints[B].y,
+                                screenPoints[C].x, screenPoints[C].y
                         );
-                    	painter.drawLine(
-                                points[C].getX(), points[C].getY(),
-                                points[G].getX(), points[G].getY()
+                        painter.drawLine(
+                                screenPoints[C].x, screenPoints[C].y,
+                                screenPoints[G].x, screenPoints[G].y
                         );
-                    	painter.drawLine(
-                                points[G].getX(), points[G].getY(),
-                                points[F].getX(), points[F].getY()
+                        painter.drawLine(
+                                screenPoints[G].x, screenPoints[G].y,
+                                screenPoints[F].x, screenPoints[F].y
                         );
                         break;
                     case CDHG:
                         logger.info("Face CDHG is visible");
-                    	painter.drawLine(
-                                points[H].getX(), points[H].getY(),
-                                points[D].getX(), points[D].getY()
+                        painter.drawLine(
+                                screenPoints[H].x, screenPoints[H].y,
+                                screenPoints[D].x, screenPoints[D].y
                         );
-                    	painter.drawLine(
-                                points[D].getX(), points[D].getY(),
-                                points[C].getX(), points[C].getY()
+                        painter.drawLine(
+                                screenPoints[D].x, screenPoints[D].y,
+                                screenPoints[C].x, screenPoints[C].y
                         );
-                    	painter.drawLine(
-                                points[C].getX(), points[C].getY(),
-                                points[G].getX(), points[G].getY()
+                        painter.drawLine(
+                                screenPoints[C].x, screenPoints[C].y,
+                                screenPoints[G].x, screenPoints[G].y
                         );
-                    	painter.drawLine(
-                                points[G].getX(), points[G].getY(),
-                                points[H].getX(), points[H].getY()
+                        painter.drawLine(
+                                screenPoints[G].x, screenPoints[G].y,
+                                screenPoints[H].x, screenPoints[H].y
                         );
                         break;
                     case EHGF:
                         logger.info("Face EHGF is visible");
-                    	painter.drawLine(
-                                points[H].getX(), points[H].getY(),
-                                points[E].getX(), points[E].getY()
+                        painter.drawLine(
+                                screenPoints[H].x, screenPoints[H].y,
+                                screenPoints[E].x, screenPoints[E].y
                         );
-                    	painter.drawLine(
-                                points[E].getX(), points[E].getY(),
-                                points[F].getX(), points[F].getY()
+                        painter.drawLine(
+                                screenPoints[E].x, screenPoints[E].y,
+                                screenPoints[F].x, screenPoints[F].y
                         );
-                    	painter.drawLine(
-                                points[F].getX(), points[F].getY(),
-                                points[G].getX(), points[G].getY()
+                        painter.drawLine(
+                                screenPoints[F].x, screenPoints[F].y,
+                                screenPoints[G].x, screenPoints[G].y
                         );
-                    	painter.drawLine(
-                                points[G].getX(), points[G].getY(),
-                                points[H].getX(), points[H].getY()
+                        painter.drawLine(
+                                screenPoints[G].x, screenPoints[G].y,
+                                screenPoints[H].x, screenPoints[H].y
                         );
                         break;
                     case DAEH:
                         logger.info("Face DAEH is visible");
-                    	painter.drawLine(
-                                points[H].getX(), points[H].getY(),
-                                points[E].getX(), points[E].getY()
+                        painter.drawLine(
+                                screenPoints[H].x, screenPoints[H].y,
+                                screenPoints[E].x, screenPoints[E].y
                         );
-                    	painter.drawLine(
-                                points[E].getX(), points[E].getY(),
-                                points[A].getX(), points[A].getY()
+                        painter.drawLine(
+                                screenPoints[E].x, screenPoints[E].y,
+                                screenPoints[A].x, screenPoints[A].y
                         );
-                    	painter.drawLine(
-                                points[A].getX(), points[A].getY(),
-                                points[D].getX(), points[D].getY()
+                        painter.drawLine(
+                                screenPoints[A].x, screenPoints[A].y,
+                                screenPoints[D].x, screenPoints[D].y
                         );
-                    	painter.drawLine(
-                                points[D].getX(), points[D].getY(),
-                                points[H].getX(), points[H].getY()
+                        painter.drawLine(
+                                screenPoints[D].x, screenPoints[D].y,
+                                screenPoints[H].x, screenPoints[H].y
                         );
                         break;
                 }
@@ -210,11 +265,19 @@ public class CubeRender {
         painter.dispose();
     }
 
+    private Point3D expand(Point3D point, float length) {
+        return new Point3D(
+                point.getX() * length,
+                point.getY() * length,
+                point.getZ() * length
+        );
+    }
+
     public BufferedImage getBuffer() {
         return imgBuffer;
     }
 
-    private Point3D cubeReferential(Point3D fixedReferential) {
+    private Point3D fixedReferential(Point3D fixedReferential) {
         return new Point3D(
                 fixedReferential.getX() + cubeOrigin.getX(),
                 fixedReferential.getY() + cubeOrigin.getY(),
@@ -224,13 +287,14 @@ public class CubeRender {
 
     /**
      * Fixed refrential is the bottom left corner
+     *
      * @param point - math point
      * @return screen point
      */
-    private Point math2pixel(Point3D point){
+    private Point math2pixel(Point3D point) {
         return new Point(
-            point.getX(),
-            point.getY() - getBuffer().getHeight(null)
+                (int) point.getX(),
+                getBuffer().getHeight() - (int) point.getY()
         );
     }
 }
