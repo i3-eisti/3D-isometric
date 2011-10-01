@@ -13,20 +13,31 @@ public class Transformation {
     }
 
     public Transformation(
-            float ax, float ay, float az, float tx,
-            float bx, float by, float bz, float ty,
-            float cx, float cy, float cz, float tz,
-            float dx, float dy, float dz, float tt
+            float ax, float ay, float az,
+            float bx, float by, float bz,
+            float cx, float cy, float cz
     ) {
         matrix = new float[][]{
-            {ax, ay, az, tx},
-            {bx, by, bz, ty},
-            {cx, cy, cz, tz},
-            {dx, dy, dz, tt},
+                {ax, ay, az},
+                {bx, by, bz},
+                {cx, cy, cz},
         };
     }
 
     public final float[][] getMatrix() {
         return matrix;
+    }
+
+    @Override
+    public String toString() {
+        final float[][] m = getMatrix();
+        return String.format(
+                "[% .2f % .2f % .2f]%n" +
+                "[% .2f % .2f % .2f]%n" +
+                "[% .2f % .2f % .2f]%n",
+                m[0][0], m[0][1], m[0][2],
+                m[1][0], m[1][1], m[1][2],
+                m[2][0], m[2][1], m[2][2]
+        );
     }
 }

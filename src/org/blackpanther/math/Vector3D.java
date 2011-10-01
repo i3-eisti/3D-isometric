@@ -46,4 +46,12 @@ public class Vector3D {
                 u.getX() * v.getY() - u.getY() * v.getX()
         );
     }
+
+    @Override
+    public String toString() {
+        return String.format(
+                "{%+.2f,%+.2f,%+.2f}",
+                getX(), getY(), getZ()
+        );
+    }
 }

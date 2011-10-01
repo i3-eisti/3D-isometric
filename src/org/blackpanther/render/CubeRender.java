@@ -33,7 +33,7 @@ public class CubeRender {
     /**
      * Référence vers un modèle de cube
      */
-    private final Cube refCube;
+    private Cube refCube;
     private final int cubeSide;
     private final Point3D cubeOrigin;
     /**
@@ -56,7 +56,6 @@ public class CubeRender {
 
         padding = 40;
 
-        refCube = cube;
         cubeSide = sideSize;
         cubeOrigin = new Point3D(
                 (dimension.width - cubeSide) / 2f,
@@ -64,29 +63,13 @@ public class CubeRender {
                 0f
         );
 
-        //cache vectors necessary to compute normal for each face
-        final Point3D[] points = cube.getPoints();
-        normalVectors[ABCD][0] = new Vector3D(points[B], points[C]);
-        normalVectors[ABCD][1] = new Vector3D(points[B], points[A]);
-
-        normalVectors[ABFE][0] = new Vector3D(points[B], points[A]);
-        normalVectors[ABFE][1] = new Vector3D(points[B], points[F]);
-
-        normalVectors[BCGF][0] = new Vector3D(points[B], points[F]);
-        normalVectors[BCGF][1] = new Vector3D(points[B], points[C]);
-
-        normalVectors[EHGF][0] = new Vector3D(points[H], points[D]);
-        normalVectors[EHGF][1] = new Vector3D(points[H], points[G]);
-
-        normalVectors[CDHG][0] = new Vector3D(points[H], points[G]);
-        normalVectors[CDHG][1] = new Vector3D(points[H], points[E]);
-
-        normalVectors[DAEH][0] = new Vector3D(points[H], points[E]);
-        normalVectors[DAEH][1] = new Vector3D(points[H], points[D]);
+        setCube(cube);
     }
 
     public final void render() {
         final Graphics2D painter = (Graphics2D) imgBuffer.getGraphics();
+        painter.setColor(Color.WHITE);
+        painter.fillRect(0, 0, imgBuffer.getWidth(), imgBuffer.getHeight());
 
         //render fixed referential axes
         painter.setColor(Color.BLACK);
@@ -125,7 +108,7 @@ public class CubeRender {
 
         //first translate fixed referential to cube referential,
         // then apply change from math to screen referential
-        for (int pointCode = screenPoints.length - 1; pointCode-- > 0; ) {
+        for (int pointCode = screenPoints.length; pointCode-- > 0; ) {
             screenPoints[pointCode] =
                     math2pixel(
                             fixedReferential(
@@ -134,10 +117,21 @@ public class CubeRender {
 
         //compute for each side if it should be drawn or not
         // i.e side's normal vector's z-component must be > 0
+        final Stroke defaultStroke = painter.getStroke();
+
+        painter.setStroke(new BasicStroke(2f));
         for (int face = normalVectors.length; face-- > 0; ) {
             Vector3D[] faceVector = normalVectors[face];
 
             Vector3D normal = faceVector[0].normal(faceVector[1]);
+
+            logger.info(String.format(
+                    "%s : %s * %s = %s",
+                    Cube.faceText(face),
+                    faceVector[0],
+                    faceVector[1],
+                    normal
+            ));
 
             //face is visible
             if (normal.getZ() > 0) {
@@ -260,7 +254,37 @@ public class CubeRender {
                 }
             }
         }
+        painter.setStroke(defaultStroke);
 
+        for (int pointCode = screenPoints.length; pointCode-- > 0; ) {
+            Point screenPoint = screenPoints[pointCode];
+            switch (pointCode) {
+                case A:
+                    painter.drawString("A", screenPoint.x, screenPoint.y);
+                    break;
+                case B:
+                    painter.drawString("B", screenPoint.x, screenPoint.y);
+                    break;
+                case C:
+                    painter.drawString("C", screenPoint.x, screenPoint.y);
+                    break;
+                case D:
+                    painter.drawString("D", screenPoint.x, screenPoint.y);
+                    break;
+                case E:
+                    painter.drawString("E", screenPoint.x, screenPoint.y);
+                    break;
+                case F:
+                    painter.drawString("F", screenPoint.x, screenPoint.y);
+                    break;
+                case G:
+                    painter.drawString("G", screenPoint.x, screenPoint.y);
+                    break;
+                case H:
+                    painter.drawString("H", screenPoint.x, screenPoint.y);
+                    break;
+            }
+        }
 
         painter.dispose();
     }
@@ -273,7 +297,34 @@ public class CubeRender {
         );
     }
 
-    public BufferedImage getBuffer() {
+    public final void setCube(final Cube cube) {
+        this.refCube = cube;
+        //cache vectors necessary to compute normal for each face
+        final Point3D[] points = cube.getPoints();
+        normalVectors[ABCD][0] = new Vector3D(points[B], points[C]);
+        normalVectors[ABCD][1] = new Vector3D(points[B], points[A]);
+
+        normalVectors[ABFE][0] = new Vector3D(points[B], points[A]);
+        normalVectors[ABFE][1] = new Vector3D(points[B], points[F]);
+
+        normalVectors[BCGF][0] = new Vector3D(points[B], points[F]);
+        normalVectors[BCGF][1] = new Vector3D(points[B], points[C]);
+
+        normalVectors[EHGF][0] = new Vector3D(points[H], points[D]);
+        normalVectors[EHGF][1] = new Vector3D(points[H], points[G]);
+
+        normalVectors[CDHG][0] = new Vector3D(points[H], points[G]);
+        normalVectors[CDHG][1] = new Vector3D(points[H], points[E]);
+
+        normalVectors[DAEH][0] = new Vector3D(points[H], points[E]);
+        normalVectors[DAEH][1] = new Vector3D(points[H], points[D]);
+    }
+
+    public final Cube getCube() {
+        return refCube;
+    }
+
+    public final BufferedImage getBuffer() {
         return imgBuffer;
     }
 

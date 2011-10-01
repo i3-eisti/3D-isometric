@@ -32,13 +32,23 @@ public class Cube {
         this(new Point3D[]{
                 new Point3D(-1f, -1f, -1f), //A
                 new Point3D(-1f, -1f, +1f), //B
-                new Point3D(-1f, +1f, +1f), //C
-                new Point3D(-1f, +1f, -1f), //D
-                new Point3D(+1f, -1f, -1f), //E
-                new Point3D(+1f, -1f, +1f), //F
+                new Point3D(+1f, -1f, +1f), //C
+                new Point3D(+1f, -1f, -1f), //D
+                new Point3D(-1f, +1f, -1f), //E
+                new Point3D(-1f, +1f, +1f), //F
                 new Point3D(+1f, +1f, +1f), //G
                 new Point3D(+1f, +1f, -1f)  //H
         });
+//        this(new Point3D[]{
+//                new Point3D(-1f, -.5f, -.2f), //A
+//                new Point3D(+0f, -1f, +.75f), //B
+//                new Point3D(+1f, -.5f, -.2f), //C
+//                new Point3D(+0f, +0f, -1f), //D
+//                new Point3D(-1f, +.5f, +.2f), //E
+//                new Point3D(+0f, +.25f, +1f), //F
+//                new Point3D(+1f, +.5f, +.2f), //G
+//                new Point3D(+0f, +1f, -.75f)  //H
+//        });
     }
 
     public Cube(float[][] apex) {
@@ -63,6 +73,48 @@ public class Cube {
     }
 
     public final Cube transform(Transformation trans) {
-        throw new UnsupportedOperationException("Not yet implemented");
+        //just create a variable to manipulate matrix easily
+        final float[][] m = trans.getMatrix();
+        //future cube's apex
+        final Point3D[] rotatedPoints = new Point3D[apex.length];
+        //apply rotation to every apex
+        for (int index = apex.length; index-- > 0; ) {
+            Point3D p = apex[index];
+            rotatedPoints[index] = new Point3D(
+                    m[0][0] * p.getX() + m[0][1] * p.getY() + m[0][2] * p.getZ(),
+                    m[1][0] * p.getX() + m[1][1] * p.getY() + m[1][2] * p.getZ(),
+                    m[2][0] * p.getX() + m[2][1] * p.getY() + m[2][2] * p.getZ()
+            );
+        }
+        return new Cube(rotatedPoints);
+    }
+
+    @Override
+    public String toString() {
+        //muahaha nobody will ever want to read this !
+        return String.format(
+                "Cube{%n" +
+                        "\tA %s%n" +
+                        "\tB %s%n" +
+                        "\tC %s%n" +
+                        "\tD %s%n" +
+                        "\tE %s%n" +
+                        "\tF %s%n" +
+                        "\tG %s%n" +
+                        "\tH %s%n" +
+                        "}%n", apex);
+    }
+
+    private static final String[] FACES_TEXT = new String[]{
+            "ABFE",
+            "ABCD",
+            "BCGF",
+            "CDHG",
+            "EHGF",
+            "DAEH",
+    };
+
+    public static String faceText(int face) {
+        return FACES_TEXT[face];
     }
 }

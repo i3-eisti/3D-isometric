@@ -1,14 +1,10 @@
 package org.blackpanther;
 
 import org.blackpanther.math.Cube;
+import org.blackpanther.render.CubeFrame;
 import org.blackpanther.render.CubeRender;
-import org.blackpanther.render.CubeScene;
 
 import java.awt.*;
-import java.awt.event.KeyAdapter;
-import java.awt.event.KeyEvent;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
 
 /**
  * @author MACHIZAUD Andréa
@@ -23,44 +19,31 @@ public class Launcher {
 
         CubeRender.DrawMode mode = CubeRender.DrawMode.LINE;
 
-        if( args.length > 0 && args[0].equals("--fill") ) {
-            mode = CubeRender.DrawMode.FILL;
+        for (String arg : args) {
+            if (arg.equals("--fill")) {
+                mode = CubeRender.DrawMode.FILL;
+            }
         }
+        logger.info("Draw mode set to " + mode);
 
-        logger.info("Draw mode changed to " + mode);
-
-        final Frame frame = new Frame("Cube manipulation");
-        final Dimension drawingAreaDimension = new Dimension(500, 500);
+        //load model
         final Cube cube = new Cube();
+        final int cubeSide = 50;
+
+        //load render engine
         final CubeRender renderer = new CubeRender(
-                cube, 30,
-                drawingAreaDimension);
-        final CubeScene scene = new CubeScene(renderer, drawingAreaDimension);
+                cube, cubeSide,
+                CubeFrame.DRAWING_AREA);
 
-        frame.addWindowListener(new WindowAdapter() {
-            @Override
-            public void windowClosing(WindowEvent e) {
-                frame.dispose();
-            }
-        });
+        //wrap it into a nice frame
+        final Frame frame = new CubeFrame(renderer);
 
-        frame.addKeyListener(new KeyAdapter() {
-            @Override
-            public void keyPressed(KeyEvent e) {
-                if (e.getKeyCode() == KeyEvent.VK_ESCAPE) {
-                    frame.dispose();
-                }
-            }
-        });
-
-        frame.add(scene);
-        frame.pack();
-
-        frame.setLocationRelativeTo(null);
+        //first render
         renderer.render();
 
+        //and finally display it
         frame.setVisible(true);
-
+        frame.requestFocus();
     }
 
 }

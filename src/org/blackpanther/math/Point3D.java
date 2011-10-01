@@ -32,4 +32,12 @@ public class Point3D {
     public final float getZ(){
         return coordinate[2];
     }
+
+    @Override
+    public String toString() {
+        return String.format(
+                "{% .2f,% .2f,% .2f}",
+                getX(), getY(), getZ()
+        );
+    }
 }
