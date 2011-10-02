@@ -8,7 +8,7 @@ public class Cube {
     private static final java.util.logging.Logger logger =
             java.util.logging.Logger.getLogger(Cube.class.getCanonicalName());
 
-    //top
+    //apex
     public static final int A = 0;
     public static final int B = 1;
     public static final int C = 2;
@@ -26,8 +26,15 @@ public class Cube {
     public static final int EHGF = 4;
     public static final int DAEH = 5;
 
+    /**
+     * Cube's apex.
+     * We don't record cube side length, this is left to the render.
+     */
     private final Point3D[] apex;
 
+    /**
+     * Constructor with default cube with BCGF only visible face
+     */
     public Cube() {
         this(new Point3D[]{
                 new Point3D(-1f, -1f, -1f), //A
@@ -41,6 +48,10 @@ public class Cube {
         });
     }
 
+    /**
+     * Full parameterized constructor
+     * @param apex - array of apex's coordinate
+     */
     public Cube(float[][] apex) {
         this(new Point3D[]{
                 new Point3D(apex[0][1], apex[0][2], apex[0][3]),
@@ -54,14 +65,28 @@ public class Cube {
         });
     }
 
+    /**
+     * Full parameterized constructor
+     * @param apex -- array of apex's coordinate
+     */
     public Cube(Point3D[] apex) {
         this.apex = apex;
     }
 
+    /**
+     * Getting all cube's apex
+     * @return cube's apex
+     */
     public final Point3D[] getPoints() {
         return apex;
     }
 
+    /**
+     * Apply a transformation to this cube
+     * @param trans - transformation to apply
+     * @return transformed cube
+     * @see Transformation
+     */
     public final Cube transform(Transformation trans) {
         //just create a variable to manipulate matrix easily
         final float[][] m = trans.getMatrix();
@@ -96,6 +121,9 @@ public class Cube {
                         "}%n", (Object[]) apex);
     }
 
+    /**
+     * Cache of string representation of face index
+     */
     private static final String[] FACES_TEXT = new String[]{
             "ABFE",
             "ABCD",
@@ -105,6 +133,11 @@ public class Cube {
             "DAEH",
     };
 
+    /**
+     * Helper to display face's name
+     * @param face - face's index
+     * @return face's name
+     */
     public static String faceText(int face) {
         return FACES_TEXT[face];
     }

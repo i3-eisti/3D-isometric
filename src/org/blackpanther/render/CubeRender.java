@@ -17,6 +17,8 @@ public class CubeRender {
     private static final java.util.logging.Logger logger =
             java.util.logging.Logger.getLogger(CubeRender.class.getCanonicalName());
 
+    public static final float MAXIMUM_POINT_OF_VIEW_HEIGHT = 400f;
+
     public enum DrawMode {
         FILL,
         LINE
@@ -35,11 +37,11 @@ public class CubeRender {
      */
     private Cube refCube;
     private final int cubeSide;
+
     private final Point3D cubeOrigin;
-    /**
-     * Cache des 2 vecteurs utiles pour calculer la normale des 6 faces
-     */
-    private final Vector3D[][] normalVectors = new Vector3D[6][2];
+    private Point3D pointOfView;
+
+    private Vector3D towardUserPointOfView;
 
     private final DrawMode mode;
 
@@ -59,9 +61,15 @@ public class CubeRender {
 
         cubeSide = sideSize;
         cubeOrigin = new Point3D(
-                (dimension.width - cubeSide) / 2f,
-                (dimension.height - cubeSide) / 2f,
+                dimension.width / 2f,
+                dimension.height / 2f,
                 0f
+        );
+        //user is just above the cube
+        setPointOfView(
+                cubeOrigin.getX(),
+                cubeOrigin.getY(),
+                MAXIMUM_POINT_OF_VIEW_HEIGHT - 100f
         );
 
         setCube(cube);
@@ -76,6 +84,11 @@ public class CubeRender {
 
         //render fixed referential axes
         painter.setColor(Color.BLACK);
+        painter.fillOval(
+                math2pixel(cubeOrigin).x,
+                math2pixel(cubeOrigin).y,
+                5, 5
+        );
 
         //forget constant, just some padding
         //abscissa axe
@@ -115,14 +128,15 @@ public class CubeRender {
             screenPoints[pointCode] =
                     math2pixel(
                             fixedReferential(
-                                    expand(mathPoints[pointCode], cubeSide / 2f)));
+                                    expand(mathPoints[pointCode], cubeSide / 2f, pointOfView)
+                            )
+                    );
         }
 
-        //compute for each side if it should be drawn or not
-        // i.e side's normal vector's z-component must be > 0
         final Stroke defaultStroke = painter.getStroke();
 
-        painter.setStroke(new BasicStroke(2f));
+        //make line little thicker
+        painter.setStroke(new BasicStroke(1f));
 
         switch (mode) {
             case LINE:
@@ -176,8 +190,18 @@ public class CubeRender {
                 );
                 break;
             case FILL:
-                for (int face = normalVectors.length; face-- > 0; ) {
-                    Vector3D[] faceVector = normalVectors[face];
+                //build points as see them with perspective
+                final Point3D[] perspectivePoints = new Point3D[8];
+                for (int index = mathPoints.length; index-- > 0; ) {
+                    perspectivePoints[index] =
+                            expand(mathPoints[index], cubeSide / 2f, pointOfView);
+                }
+
+                logger.fine("Toward point of view : " + towardUserPointOfView);
+                //compute for each side if it should be drawn or not
+                // i.e side's normal vector's z-component must be > 0
+                for (int face = 6; face-- > 0; ) {
+                    Vector3D[] faceVector = getNormal(perspectivePoints, face);
 
                     Vector3D normal = faceVector[0].normal(faceVector[1]);
 
@@ -188,7 +212,8 @@ public class CubeRender {
                             faceVector[1],
                             normal
                     ));
-                    if (normal.getZ() > 0) {
+//                    if (normal.dot(towardUserPointOfView) > 0f) {
+                    if (normal.getZ() > 0f) {
 
                         switch (face) {
                             case ABFE:
@@ -353,35 +378,79 @@ public class CubeRender {
         painter.dispose();
     }
 
-    private Point3D expand(Point3D point, float length) {
+    /**
+     * Expand a point through the alignment from the cube's center,
+     * and compute position relative to the point of view
+     *
+     * @param point       - point from cube's referential
+     * @param length      - length to expland
+     * @param pointOfView - position of the point of view
+     * @return - expanded point
+     */
+    private Point3D expand(Point3D point, float length, Point3D pointOfView) {
+        final float viewRatio =
+                (MAXIMUM_POINT_OF_VIEW_HEIGHT - pointOfView.getZ()) /
+                        (MAXIMUM_POINT_OF_VIEW_HEIGHT - (point.getZ() * length));
+        final float realSide = length * viewRatio;
         return new Point3D(
-                point.getX() * length,
-                point.getY() * length,
-                point.getZ() * length
+                point.getX() * realSide,
+                point.getY() * realSide,
+                point.getZ() * realSide
         );
+    }
+
+    public void setPointOfView(final Point3D pov) {
+        setPointOfView(pov.getX(), pov.getY(), pov.getZ());
+    }
+
+    public void setPointOfView(float x, float y, float z) {
+        this.pointOfView = new Point3D(x, y, z);
+        this.towardUserPointOfView = new Vector3D(cubeOrigin, pointOfView);
+    }
+
+    public final Point3D getPointOfView() {
+        return pointOfView;
     }
 
     public final void setCube(final Cube cube) {
         this.refCube = cube;
-        //cache vectors necessary to compute normal for each face
-        final Point3D[] points = cube.getPoints();
-        normalVectors[ABCD][0] = new Vector3D(points[B], points[A]);
-        normalVectors[ABCD][1] = new Vector3D(points[B], points[C]);
+    }
 
-        normalVectors[ABFE][0] = new Vector3D(points[B], points[F]);
-        normalVectors[ABFE][1] = new Vector3D(points[B], points[A]);
-
-        normalVectors[BCGF][0] = new Vector3D(points[B], points[C]);
-        normalVectors[BCGF][1] = new Vector3D(points[B], points[F]);
-
-        normalVectors[EHGF][0] = new Vector3D(points[H], points[E]);
-        normalVectors[EHGF][1] = new Vector3D(points[H], points[G]);
-
-        normalVectors[CDHG][0] = new Vector3D(points[H], points[G]);
-        normalVectors[CDHG][1] = new Vector3D(points[H], points[D]);
-
-        normalVectors[DAEH][0] = new Vector3D(points[H], points[D]);
-        normalVectors[DAEH][1] = new Vector3D(points[H], points[E]);
+    private Vector3D[] getNormal(final Point3D[] points, final int face) {
+        switch (face) {
+            case ABCD:
+                return new Vector3D[]{
+                        new Vector3D(points[B], points[A]),
+                        new Vector3D(points[B], points[C])
+                };
+            case ABFE:
+                return new Vector3D[]{
+                        new Vector3D(points[B], points[F]),
+                        new Vector3D(points[B], points[A])
+                };
+            case BCGF:
+                return new Vector3D[]{
+                        new Vector3D(points[B], points[C]),
+                        new Vector3D(points[B], points[F])
+                };
+            case CDHG:
+                return new Vector3D[]{
+                        new Vector3D(points[H], points[G]),
+                        new Vector3D(points[H], points[D])
+                };
+            case EHGF:
+                return new Vector3D[]{
+                        new Vector3D(points[H], points[E]),
+                        new Vector3D(points[H], points[G])
+                };
+            case DAEH:
+                return new Vector3D[]{
+                        new Vector3D(points[H], points[D]),
+                        new Vector3D(points[H], points[E])
+                };
+            default:
+                throw new IllegalArgumentException("Unknown face ! " + face);
+        }
     }
 
     public final Cube getCube() {
@@ -392,11 +461,11 @@ public class CubeRender {
         return imgBuffer;
     }
 
-    private Point3D fixedReferential(Point3D fixedReferential) {
+    private Point3D fixedReferential(Point3D cubeReferential) {
         return new Point3D(
-                fixedReferential.getX() + cubeOrigin.getX(),
-                fixedReferential.getY() + cubeOrigin.getY(),
-                fixedReferential.getZ() + cubeOrigin.getZ()
+                cubeReferential.getX() + cubeOrigin.getX(),
+                cubeReferential.getY() + cubeOrigin.getY(),
+                cubeReferential.getZ() + cubeOrigin.getZ()
         );
     }
 

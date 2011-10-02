@@ -7,12 +7,23 @@ package org.blackpanther.math;
 public class RawTransformation
         implements Transformation {
 
+    /**
+     * Transformation data.
+     * 4x4 matrix
+     */
     private final float[][] matrix;
 
+    /**
+     * Matrix argument constructor
+     * @param matrix - transformation matrix
+     */
     public RawTransformation(float[][] matrix) {
         this.matrix = matrix;
     }
 
+    /**
+     * Full parameter constructor
+     */
     public RawTransformation(
             float ax, float ay, float az, float tx,
             float bx, float by, float bz, float ty,
@@ -27,10 +38,16 @@ public class RawTransformation
         };
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public final float[][] getMatrix() {
         return matrix;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public Transformation compose(Transformation transformation) {
         throw new UnsupportedOperationException("Not yet implemented");

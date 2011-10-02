@@ -1,6 +1,8 @@
 package org.blackpanther.math;
 
 /**
+ * Specialized transformation to do translation only
+ *
  * @author MACHIZAUD Andréa
  * @version 02/10/11
  */

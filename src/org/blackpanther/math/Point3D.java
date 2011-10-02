@@ -8,6 +8,9 @@ public class Point3D {
     private static final java.util.logging.Logger logger =
             java.util.logging.Logger.getLogger(Point3D.class.getCanonicalName());
 
+    /**
+     * Point's coordinate
+     */
     private float[] coordinate;
 
     public Point3D(
@@ -15,9 +18,12 @@ public class Point3D {
             final float y,
             final float z
     ) {
-        this(x,y,z,1);
+        this(x, y, z, 1);
     }
 
+    /**
+     * Internal constructor to manipulate virtual fourth component
+     */
     Point3D(
             final float x,
             final float y,
@@ -31,18 +37,22 @@ public class Point3D {
         coordinate[3] = t;
     }
 
-    public final float getX(){
+    public final float getX() {
         return coordinate[0];
     }
 
-    public final float getY(){
+    public final float getY() {
         return coordinate[1];
     }
 
-    public final float getZ(){
+    public final float getZ() {
         return coordinate[2];
     }
 
+    /**
+     * Virtual fourth component.
+     * Present to ease some computations.
+     */
     final float getT() {
         return coordinate[3];
     }

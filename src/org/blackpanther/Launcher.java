@@ -63,8 +63,7 @@ public class Launcher {
         }
         logger.info("Initial cube : \n" + cube);
 
-        final int cubeSide = 50;
-
+        final int cubeSide = 200;
 
         //load render engine
         final CubeRender renderer = new CubeRender(
