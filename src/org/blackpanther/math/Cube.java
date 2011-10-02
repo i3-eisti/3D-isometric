@@ -102,7 +102,7 @@ public class Cube {
                         "\tF %s%n" +
                         "\tG %s%n" +
                         "\tH %s%n" +
-                        "}%n", apex);
+                        "}%n", (Object[]) apex);
     }
 
     private static final String[] FACES_TEXT = new String[]{

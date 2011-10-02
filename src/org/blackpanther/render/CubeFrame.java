@@ -65,6 +65,7 @@ public final class CubeFrame extends Frame {
         add(scene, BorderLayout.CENTER);
         add(panButtons, BorderLayout.SOUTH);
         pack();
+        setResizable(false);
 
         //location
         setLocationRelativeTo(null);

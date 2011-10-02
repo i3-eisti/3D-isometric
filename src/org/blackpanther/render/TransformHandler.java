@@ -6,6 +6,7 @@ import org.blackpanther.math.Transformation;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.logging.Logger;
 
 import static java.lang.Math.cos;
 import static java.lang.Math.sin;
@@ -16,12 +17,15 @@ import static java.lang.Math.sin;
  */
 public class TransformHandler implements ActionListener {
 
+    public static final Logger logger =
+            Logger.getLogger(TransformHandler.class.getCanonicalName());
+
     public static final String X_PLUS = "x-plus";
     public static final String X_MINUS = "x-minus";
     public static final String Y_PLUS = "y-plus";
     public static final String Y_MINUS = "y-minus";
-    public static final String Z_PLUS = "y-plus";
-    public static final String Z_MINUS = "y-minus";
+    public static final String Z_PLUS = "z-plus";
+    public static final String Z_MINUS = "z-minus";
 
     private final CubeRender renderer;
     private final Canvas scene;
@@ -45,6 +49,7 @@ public class TransformHandler implements ActionListener {
                 {0f, 0f, 1f},
         };
 
+        logger.fine("Action : " + e.getActionCommand());
         if (e.getActionCommand().equals(X_PLUS)) {
             //x-rotation
             matrix = new float[][]{
@@ -94,6 +99,12 @@ public class TransformHandler implements ActionListener {
         //create the resulting cube
         final Cube rotatedCube =
                 renderer.getCube().transform(transformation);
+
+        logger.finer(String.format(
+                "%s rotated to %s",
+                renderer.getCube(),
+                rotatedCube
+        ));
 
         //pass it back to the renderer
         renderer.setCube(rotatedCube);

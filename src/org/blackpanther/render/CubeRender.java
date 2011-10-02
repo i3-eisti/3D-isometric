@@ -41,11 +41,12 @@ public class CubeRender {
      */
     private final Vector3D[][] normalVectors = new Vector3D[6][2];
 
-    private DrawMode mode = DrawMode.LINE;
+    private final DrawMode mode;
 
     public CubeRender(
             final Cube cube,
             final int sideSize,
+            final DrawMode mode,
             final Dimension dimension
     ) {
         imgBuffer = new BufferedImage(
@@ -64,6 +65,8 @@ public class CubeRender {
         );
 
         setCube(cube);
+
+        this.mode = mode;
     }
 
     public final void render() {
@@ -120,139 +123,192 @@ public class CubeRender {
         final Stroke defaultStroke = painter.getStroke();
 
         painter.setStroke(new BasicStroke(2f));
-        for (int face = normalVectors.length; face-- > 0; ) {
-            Vector3D[] faceVector = normalVectors[face];
 
-            Vector3D normal = faceVector[0].normal(faceVector[1]);
+        switch (mode) {
+            case LINE:
+                painter.drawLine(
+                        screenPoints[A].x, screenPoints[A].y,
+                        screenPoints[B].x, screenPoints[B].y
+                );
+                painter.drawLine(
+                        screenPoints[B].x, screenPoints[B].y,
+                        screenPoints[F].x, screenPoints[F].y
+                );
+                painter.drawLine(
+                        screenPoints[F].x, screenPoints[F].y,
+                        screenPoints[E].x, screenPoints[E].y
+                );
+                painter.drawLine(
+                        screenPoints[E].x, screenPoints[E].y,
+                        screenPoints[A].x, screenPoints[A].y
+                );
+                painter.drawLine(
+                        screenPoints[A].x, screenPoints[A].y,
+                        screenPoints[D].x, screenPoints[D].y
+                );
+                painter.drawLine(
+                        screenPoints[D].x, screenPoints[D].y,
+                        screenPoints[C].x, screenPoints[C].y
+                );
+                painter.drawLine(
+                        screenPoints[D].x, screenPoints[D].y,
+                        screenPoints[H].x, screenPoints[H].y
+                );
+                painter.drawLine(
+                        screenPoints[C].x, screenPoints[C].y,
+                        screenPoints[B].x, screenPoints[B].y
+                );
+                painter.drawLine(
+                        screenPoints[C].x, screenPoints[C].y,
+                        screenPoints[G].x, screenPoints[G].y
+                );
+                painter.drawLine(
+                        screenPoints[G].x, screenPoints[G].y,
+                        screenPoints[H].x, screenPoints[H].y
+                );
+                painter.drawLine(
+                        screenPoints[G].x, screenPoints[G].y,
+                        screenPoints[F].x, screenPoints[F].y
+                );
+                painter.drawLine(
+                        screenPoints[H].x, screenPoints[H].y,
+                        screenPoints[E].x, screenPoints[E].y
+                );
+                break;
+            case FILL:
+                for (int face = normalVectors.length; face-- > 0; ) {
+                    Vector3D[] faceVector = normalVectors[face];
 
-            logger.info(String.format(
-                    "%s : %s * %s = %s",
-                    Cube.faceText(face),
-                    faceVector[0],
-                    faceVector[1],
-                    normal
-            ));
+                    Vector3D normal = faceVector[0].normal(faceVector[1]);
 
-            //face is visible
-            if (normal.getZ() > 0) {
+                    logger.info(String.format(
+                            "%s : %s * %s = %s",
+                            Cube.faceText(face),
+                            faceVector[0],
+                            faceVector[1],
+                            normal
+                    ));
+                    if (normal.getZ() > 0) {
 
-                switch (face) {
-                    case ABFE:
-                        logger.info("Face ABFE is visible");
-                        painter.drawLine(
-                                screenPoints[A].x, screenPoints[A].y,
-                                screenPoints[B].x, screenPoints[B].y
-                        );
-                        painter.drawLine(
-                                screenPoints[B].x, screenPoints[B].y,
-                                screenPoints[F].x, screenPoints[F].y
-                        );
-                        painter.drawLine(
-                                screenPoints[F].x, screenPoints[F].y,
-                                screenPoints[E].x, screenPoints[E].y
-                        );
-                        painter.drawLine(
-                                screenPoints[E].x, screenPoints[E].y,
-                                screenPoints[A].x, screenPoints[A].y
-                        );
-                        break;
-                    case ABCD:
-                        logger.info("Face ABCD is visible");
-                        painter.drawLine(
-                                screenPoints[A].x, screenPoints[A].y,
-                                screenPoints[B].x, screenPoints[B].y
-                        );
-                        painter.drawLine(
-                                screenPoints[B].x, screenPoints[B].y,
-                                screenPoints[C].x, screenPoints[C].y
-                        );
-                        painter.drawLine(
-                                screenPoints[C].x, screenPoints[C].y,
-                                screenPoints[D].x, screenPoints[D].y
-                        );
-                        painter.drawLine(
-                                screenPoints[D].x, screenPoints[D].y,
-                                screenPoints[A].x, screenPoints[A].y
-                        );
-                        break;
-                    case BCGF:
-                        logger.info("Face BCGF is visible");
-                        painter.drawLine(
-                                screenPoints[F].x, screenPoints[F].y,
-                                screenPoints[B].x, screenPoints[B].y
-                        );
-                        painter.drawLine(
-                                screenPoints[B].x, screenPoints[B].y,
-                                screenPoints[C].x, screenPoints[C].y
-                        );
-                        painter.drawLine(
-                                screenPoints[C].x, screenPoints[C].y,
-                                screenPoints[G].x, screenPoints[G].y
-                        );
-                        painter.drawLine(
-                                screenPoints[G].x, screenPoints[G].y,
-                                screenPoints[F].x, screenPoints[F].y
-                        );
-                        break;
-                    case CDHG:
-                        logger.info("Face CDHG is visible");
-                        painter.drawLine(
-                                screenPoints[H].x, screenPoints[H].y,
-                                screenPoints[D].x, screenPoints[D].y
-                        );
-                        painter.drawLine(
-                                screenPoints[D].x, screenPoints[D].y,
-                                screenPoints[C].x, screenPoints[C].y
-                        );
-                        painter.drawLine(
-                                screenPoints[C].x, screenPoints[C].y,
-                                screenPoints[G].x, screenPoints[G].y
-                        );
-                        painter.drawLine(
-                                screenPoints[G].x, screenPoints[G].y,
-                                screenPoints[H].x, screenPoints[H].y
-                        );
-                        break;
-                    case EHGF:
-                        logger.info("Face EHGF is visible");
-                        painter.drawLine(
-                                screenPoints[H].x, screenPoints[H].y,
-                                screenPoints[E].x, screenPoints[E].y
-                        );
-                        painter.drawLine(
-                                screenPoints[E].x, screenPoints[E].y,
-                                screenPoints[F].x, screenPoints[F].y
-                        );
-                        painter.drawLine(
-                                screenPoints[F].x, screenPoints[F].y,
-                                screenPoints[G].x, screenPoints[G].y
-                        );
-                        painter.drawLine(
-                                screenPoints[G].x, screenPoints[G].y,
-                                screenPoints[H].x, screenPoints[H].y
-                        );
-                        break;
-                    case DAEH:
-                        logger.info("Face DAEH is visible");
-                        painter.drawLine(
-                                screenPoints[H].x, screenPoints[H].y,
-                                screenPoints[E].x, screenPoints[E].y
-                        );
-                        painter.drawLine(
-                                screenPoints[E].x, screenPoints[E].y,
-                                screenPoints[A].x, screenPoints[A].y
-                        );
-                        painter.drawLine(
-                                screenPoints[A].x, screenPoints[A].y,
-                                screenPoints[D].x, screenPoints[D].y
-                        );
-                        painter.drawLine(
-                                screenPoints[D].x, screenPoints[D].y,
-                                screenPoints[H].x, screenPoints[H].y
-                        );
-                        break;
+                        switch (face) {
+                            case ABFE:
+                                logger.info("Face ABFE is visible");
+                                painter.drawLine(
+                                        screenPoints[A].x, screenPoints[A].y,
+                                        screenPoints[B].x, screenPoints[B].y
+                                );
+                                painter.drawLine(
+                                        screenPoints[B].x, screenPoints[B].y,
+                                        screenPoints[F].x, screenPoints[F].y
+                                );
+                                painter.drawLine(
+                                        screenPoints[F].x, screenPoints[F].y,
+                                        screenPoints[E].x, screenPoints[E].y
+                                );
+                                painter.drawLine(
+                                        screenPoints[E].x, screenPoints[E].y,
+                                        screenPoints[A].x, screenPoints[A].y
+                                );
+                                break;
+                            case ABCD:
+                                logger.info("Face ABCD is visible");
+                                painter.drawLine(
+                                        screenPoints[A].x, screenPoints[A].y,
+                                        screenPoints[B].x, screenPoints[B].y
+                                );
+                                painter.drawLine(
+                                        screenPoints[B].x, screenPoints[B].y,
+                                        screenPoints[C].x, screenPoints[C].y
+                                );
+                                painter.drawLine(
+                                        screenPoints[C].x, screenPoints[C].y,
+                                        screenPoints[D].x, screenPoints[D].y
+                                );
+                                painter.drawLine(
+                                        screenPoints[D].x, screenPoints[D].y,
+                                        screenPoints[A].x, screenPoints[A].y
+                                );
+                                break;
+                            case BCGF:
+                                logger.info("Face BCGF is visible");
+                                painter.drawLine(
+                                        screenPoints[F].x, screenPoints[F].y,
+                                        screenPoints[B].x, screenPoints[B].y
+                                );
+                                painter.drawLine(
+                                        screenPoints[B].x, screenPoints[B].y,
+                                        screenPoints[C].x, screenPoints[C].y
+                                );
+                                painter.drawLine(
+                                        screenPoints[C].x, screenPoints[C].y,
+                                        screenPoints[G].x, screenPoints[G].y
+                                );
+                                painter.drawLine(
+                                        screenPoints[G].x, screenPoints[G].y,
+                                        screenPoints[F].x, screenPoints[F].y
+                                );
+                                break;
+                            case CDHG:
+                                logger.info("Face CDHG is visible");
+                                painter.drawLine(
+                                        screenPoints[H].x, screenPoints[H].y,
+                                        screenPoints[D].x, screenPoints[D].y
+                                );
+                                painter.drawLine(
+                                        screenPoints[D].x, screenPoints[D].y,
+                                        screenPoints[C].x, screenPoints[C].y
+                                );
+                                painter.drawLine(
+                                        screenPoints[C].x, screenPoints[C].y,
+                                        screenPoints[G].x, screenPoints[G].y
+                                );
+                                painter.drawLine(
+                                        screenPoints[G].x, screenPoints[G].y,
+                                        screenPoints[H].x, screenPoints[H].y
+                                );
+                                break;
+                            case EHGF:
+                                logger.info("Face EHGF is visible");
+                                painter.drawLine(
+                                        screenPoints[H].x, screenPoints[H].y,
+                                        screenPoints[E].x, screenPoints[E].y
+                                );
+                                painter.drawLine(
+                                        screenPoints[E].x, screenPoints[E].y,
+                                        screenPoints[F].x, screenPoints[F].y
+                                );
+                                painter.drawLine(
+                                        screenPoints[F].x, screenPoints[F].y,
+                                        screenPoints[G].x, screenPoints[G].y
+                                );
+                                painter.drawLine(
+                                        screenPoints[G].x, screenPoints[G].y,
+                                        screenPoints[H].x, screenPoints[H].y
+                                );
+                                break;
+                            case DAEH:
+                                logger.info("Face DAEH is visible");
+                                painter.drawLine(
+                                        screenPoints[H].x, screenPoints[H].y,
+                                        screenPoints[E].x, screenPoints[E].y
+                                );
+                                painter.drawLine(
+                                        screenPoints[E].x, screenPoints[E].y,
+                                        screenPoints[A].x, screenPoints[A].y
+                                );
+                                painter.drawLine(
+                                        screenPoints[A].x, screenPoints[A].y,
+                                        screenPoints[D].x, screenPoints[D].y
+                                );
+                                painter.drawLine(
+                                        screenPoints[D].x, screenPoints[D].y,
+                                        screenPoints[H].x, screenPoints[H].y
+                                );
+                                break;
+                        }
+                    }
                 }
-            }
+                break;
         }
         painter.setStroke(defaultStroke);
 
@@ -260,27 +316,35 @@ public class CubeRender {
             Point screenPoint = screenPoints[pointCode];
             switch (pointCode) {
                 case A:
+                    painter.setColor(Color.BLUE);
                     painter.drawString("A", screenPoint.x, screenPoint.y);
                     break;
                 case B:
+                    painter.setColor(Color.CYAN);
                     painter.drawString("B", screenPoint.x, screenPoint.y);
                     break;
                 case C:
+                    painter.setColor(Color.RED);
                     painter.drawString("C", screenPoint.x, screenPoint.y);
                     break;
                 case D:
+                    painter.setColor(Color.PINK);
                     painter.drawString("D", screenPoint.x, screenPoint.y);
                     break;
                 case E:
+                    painter.setColor(Color.GREEN);
                     painter.drawString("E", screenPoint.x, screenPoint.y);
                     break;
                 case F:
+                    painter.setColor(Color.YELLOW);
                     painter.drawString("F", screenPoint.x, screenPoint.y);
                     break;
                 case G:
+                    painter.setColor(Color.MAGENTA);
                     painter.drawString("G", screenPoint.x, screenPoint.y);
                     break;
                 case H:
+                    painter.setColor(Color.ORANGE);
                     painter.drawString("H", screenPoint.x, screenPoint.y);
                     break;
             }
@@ -301,23 +365,23 @@ public class CubeRender {
         this.refCube = cube;
         //cache vectors necessary to compute normal for each face
         final Point3D[] points = cube.getPoints();
-        normalVectors[ABCD][0] = new Vector3D(points[B], points[C]);
-        normalVectors[ABCD][1] = new Vector3D(points[B], points[A]);
+        normalVectors[ABCD][0] = new Vector3D(points[B], points[A]);
+        normalVectors[ABCD][1] = new Vector3D(points[B], points[C]);
 
-        normalVectors[ABFE][0] = new Vector3D(points[B], points[A]);
-        normalVectors[ABFE][1] = new Vector3D(points[B], points[F]);
+        normalVectors[ABFE][0] = new Vector3D(points[B], points[F]);
+        normalVectors[ABFE][1] = new Vector3D(points[B], points[A]);
 
-        normalVectors[BCGF][0] = new Vector3D(points[B], points[F]);
-        normalVectors[BCGF][1] = new Vector3D(points[B], points[C]);
+        normalVectors[BCGF][0] = new Vector3D(points[B], points[C]);
+        normalVectors[BCGF][1] = new Vector3D(points[B], points[F]);
 
-        normalVectors[EHGF][0] = new Vector3D(points[H], points[D]);
+        normalVectors[EHGF][0] = new Vector3D(points[H], points[E]);
         normalVectors[EHGF][1] = new Vector3D(points[H], points[G]);
 
         normalVectors[CDHG][0] = new Vector3D(points[H], points[G]);
-        normalVectors[CDHG][1] = new Vector3D(points[H], points[E]);
+        normalVectors[CDHG][1] = new Vector3D(points[H], points[D]);
 
-        normalVectors[DAEH][0] = new Vector3D(points[H], points[E]);
-        normalVectors[DAEH][1] = new Vector3D(points[H], points[D]);
+        normalVectors[DAEH][0] = new Vector3D(points[H], points[D]);
+        normalVectors[DAEH][1] = new Vector3D(points[H], points[E]);
     }
 
     public final Cube getCube() {

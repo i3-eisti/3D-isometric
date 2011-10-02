@@ -5,6 +5,9 @@ import org.blackpanther.render.CubeFrame;
 import org.blackpanther.render.CubeRender;
 
 import java.awt.*;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.logging.LogManager;
 
 /**
  * @author MACHIZAUD Andréa
@@ -16,6 +19,17 @@ public class Launcher {
             java.util.logging.Logger.getLogger(Launcher.class.getCanonicalName());
 
     public static void main(String[] args) {
+
+        try {
+            InputStream loggerConfig =
+                    Launcher.class.getClassLoader().getResourceAsStream(
+                            "org/blackpanther/logging/logging.properties"
+                    );
+            LogManager.getLogManager().readConfiguration(loggerConfig);
+            logger.info("Logger configuration loaded");
+        } catch (IOException e) {
+            logger.severe("Couldn't load logger configuration " + e.getLocalizedMessage());
+        }
 
         CubeRender.DrawMode mode = CubeRender.DrawMode.LINE;
 
@@ -33,6 +47,7 @@ public class Launcher {
         //load render engine
         final CubeRender renderer = new CubeRender(
                 cube, cubeSide,
+                mode,
                 CubeFrame.DRAWING_AREA);
 
         //wrap it into a nice frame
