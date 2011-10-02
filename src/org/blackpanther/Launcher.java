@@ -1,6 +1,7 @@
 package org.blackpanther;
 
 import org.blackpanther.math.Cube;
+import org.blackpanther.math.Point3D;
 import org.blackpanther.render.CubeFrame;
 import org.blackpanther.render.CubeRender;
 
@@ -33,16 +34,28 @@ public class Launcher {
 
         CubeRender.DrawMode mode = CubeRender.DrawMode.LINE;
 
+        final float[] apex = new float[24];
+        int index = 0;
         for (String arg : args) {
             if (arg.equals("--fill")) {
                 mode = CubeRender.DrawMode.FILL;
+            } else {
+                apex[index++] = Float.parseFloat(arg);
             }
+        }
+        if (index != 24) {
+            throw new IllegalArgumentException(
+                    "Not enough point data received to build a cube, " +
+                            "please provide exactly 8 3-dimensional points data"
+            );
         }
         logger.info("Draw mode set to " + mode);
 
         //load model
-        final Cube cube = new Cube();
+        final Cube cube = new Cube(buildApex(apex));
         final int cubeSide = 50;
+
+        logger.info("Initial cube : \n" + cube);
 
         //load render engine
         final CubeRender renderer = new CubeRender(
@@ -59,6 +72,20 @@ public class Launcher {
         //and finally display it
         frame.setVisible(true);
         frame.requestFocus();
+    }
+
+    private static Point3D[] buildApex(float[] floatApex) {
+        final Point3D[] pointApex = new Point3D[8];
+        for (int pointIndex = 0, floatIndex = 0;
+             floatIndex < floatApex.length;
+             pointIndex++, floatIndex += 3) {
+            pointApex[pointIndex] = new Point3D(
+                    floatApex[floatIndex],
+                    floatApex[floatIndex + 1],
+                    floatApex[floatIndex + 2]
+            );
+        }
+        return pointApex;
     }
 
 }

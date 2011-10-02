@@ -39,16 +39,6 @@ public class Cube {
                 new Point3D(+1f, +1f, +1f), //G
                 new Point3D(+1f, +1f, -1f)  //H
         });
-//        this(new Point3D[]{
-//                new Point3D(-1f, -.5f, -.2f), //A
-//                new Point3D(+0f, -1f, +.75f), //B
-//                new Point3D(+1f, -.5f, -.2f), //C
-//                new Point3D(+0f, +0f, -1f), //D
-//                new Point3D(-1f, +.5f, +.2f), //E
-//                new Point3D(+0f, +.25f, +1f), //F
-//                new Point3D(+1f, +.5f, +.2f), //G
-//                new Point3D(+0f, +1f, -.75f)  //H
-//        });
     }
 
     public Cube(float[][] apex) {
