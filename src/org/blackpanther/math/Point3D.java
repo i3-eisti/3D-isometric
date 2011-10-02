@@ -15,10 +15,20 @@ public class Point3D {
             final float y,
             final float z
     ) {
-        coordinate = new float[3];
+        this(x,y,z,1);
+    }
+
+    Point3D(
+            final float x,
+            final float y,
+            final float z,
+            final float t
+    ) {
+        coordinate = new float[4];
         coordinate[0] = x;
         coordinate[1] = y;
         coordinate[2] = z;
+        coordinate[3] = t;
     }
 
     public final float getX(){
@@ -31,6 +41,10 @@ public class Point3D {
 
     public final float getZ(){
         return coordinate[2];
+    }
+
+    final float getT() {
+        return coordinate[3];
     }
 
     @Override

@@ -71,9 +71,10 @@ public class Cube {
         for (int index = apex.length; index-- > 0; ) {
             Point3D p = apex[index];
             rotatedPoints[index] = new Point3D(
-                    m[0][0] * p.getX() + m[0][1] * p.getY() + m[0][2] * p.getZ(),
-                    m[1][0] * p.getX() + m[1][1] * p.getY() + m[1][2] * p.getZ(),
-                    m[2][0] * p.getX() + m[2][1] * p.getY() + m[2][2] * p.getZ()
+                    m[0][0] * p.getX() + m[0][1] * p.getY() + m[0][2] * p.getZ() + m[0][3] * p.getT(),
+                    m[1][0] * p.getX() + m[1][1] * p.getY() + m[1][2] * p.getZ() + m[1][3] * p.getT(),
+                    m[2][0] * p.getX() + m[2][1] * p.getY() + m[2][2] * p.getZ() + m[2][3] * p.getT(),
+                    m[3][0] * p.getX() + m[3][1] * p.getY() + m[3][2] * p.getZ() + m[3][3] * p.getT()
             );
         }
         return new Cube(rotatedPoints);

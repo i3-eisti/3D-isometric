@@ -1,6 +1,7 @@
 package org.blackpanther.render;
 
 import org.blackpanther.math.Cube;
+import org.blackpanther.math.Rotation;
 import org.blackpanther.math.Transformation;
 
 import java.awt.*;
@@ -30,7 +31,7 @@ public class TransformHandler implements ActionListener {
     private final CubeRender renderer;
     private final Canvas scene;
 
-    private final double step = Math.PI / 4.0;
+    private final double step = Math.PI / 12.0;
 
     public TransformHandler(
             final CubeRender renderer,
@@ -94,7 +95,7 @@ public class TransformHandler implements ActionListener {
             };
         }
         final Transformation transformation =
-                new Transformation(matrix);
+                new Rotation(matrix);
 
         //create the resulting cube
         final Cube rotatedCube =
