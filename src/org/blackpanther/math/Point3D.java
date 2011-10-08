@@ -64,4 +64,46 @@ public class Point3D {
                 getX(), getY(), getZ()
         );
     }
+
+    public Point3D moveTo(
+            final float newX,
+            final float newY,
+            final float newZ
+    ) {
+        return new Point3D(
+                newX,
+                newY,
+                newZ
+        );
+    }
+
+    /**
+     * Point with incomplete data, created for example to change from screen point to math point
+     */
+    public static class Incomplete extends Point3D {
+
+        public Incomplete(final float x, final float y) {
+            super(x, y, Float.NaN);
+        }
+
+        @Override
+        public Point3D moveTo(
+                final float newX,
+                final float newY,
+                final float newZ
+        ) {
+            return new Incomplete(
+                    newX,
+                    newY
+            );
+        }
+
+        @Override
+        public String toString() {
+            return String.format(
+                    "{% .2f,% .2f, ???}",
+                    getX(), getY()
+            );
+        }
+    }
 }

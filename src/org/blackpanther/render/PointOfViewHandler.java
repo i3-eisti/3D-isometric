@@ -1,6 +1,7 @@
 package org.blackpanther.render;
 
 import org.blackpanther.math.Point3D;
+import org.blackpanther.math.Shape;
 
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -23,13 +24,13 @@ public class PointOfViewHandler implements ActionListener {
     public static final String Z_PLUS = "z-plus";
     public static final String Z_MINUS = "z-minus";
 
-    private final CubeRender renderer;
+    private final Renderer renderer;
     private final Canvas scene;
 
-    private final float step = 5.0f;
+    private static final float step = 20.0f;
 
     public PointOfViewHandler(
-            final CubeRender renderer,
+            final Renderer renderer,
             final Canvas scene
     ) {
         this.renderer = renderer;
@@ -68,7 +69,7 @@ public class PointOfViewHandler implements ActionListener {
                     currentPointOfView.getZ()
             );
         } else if (e.getActionCommand().equals(Z_PLUS)) {
-            if (nextPointOfView.getZ() < CubeRender.MAXIMUM_POINT_OF_VIEW_HEIGHT)
+            if (nextPointOfView.getZ() < AbstractRenderer.MAXIMUM_POINT_OF_VIEW_HEIGHT)
                 nextPointOfView = new Point3D(
                         currentPointOfView.getX(),
                         currentPointOfView.getY(),
@@ -83,11 +84,20 @@ public class PointOfViewHandler implements ActionListener {
                 );
         }
 
-        renderer.setPointOfView(nextPointOfView);
-
-        logger.info("New Point of view : " + renderer.getPointOfView());
+        if (!collideWithShape(nextPointOfView, renderer.getShape())) {
+            renderer.setPointOfView(nextPointOfView);
+            logger.info("New Point of view : " + renderer.getPointOfView());
+        } else {
+            logger.info("No change of point of view because of collision");
+        }
 
         renderer.render();
         scene.repaint();
+    }
+
+    private boolean collideWithShape(Point3D nextPointOfView, Shape shape) {
+        final Point3D spherePoint = renderer.shapeReferential(nextPointOfView);
+        final Point3D normalizedSpherePoint = renderer.normalized(spherePoint);
+        return shape.contains(normalizedSpherePoint);
     }
 }

@@ -7,16 +7,16 @@ import java.awt.event.*;
  * @author MACHIZAUD Andréa
  * @version 01/10/11
  */
-public final class CubeFrame extends Frame {
+public final class SceneFrame extends Frame {
 
     public static final Dimension DRAWING_AREA = new Dimension(500, 500);
 
-    public CubeFrame(
-            final CubeRender renderer
+    public SceneFrame(
+            final Renderer renderer
     ) throws HeadlessException {
         super("Cube manipulation");
 
-        final Canvas scene = new CubeScene(renderer, DRAWING_AREA);
+        final Canvas scene = new Scene(renderer, DRAWING_AREA);
 
         //rotation commands
         final Button[] bRotationAbscissa = new Button[]{

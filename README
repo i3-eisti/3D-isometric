@@ -1,10 +1,13 @@
-Objective :
+KNOWN BUG :
 
-DONE - 1. $ java TheCube -mode=fildefer | -mode=facesvisibles
-DONE - 2. 1 cube = 8 lignes de 3 floattant sur fichier d'entrée
-DONE - 3. à l'aide des boutons tourner dans l'espace(centre cube immobile)
-DONE - 4. afficher après chaque usage de bouton
-DONE - 4'. Perspective ?
+    - When changing point of view, the initially hidden face is not drawn correctly
+    - Perspective not enabled with Sphere
+
+TODO :
+
+    - Perspective
+    - Scene collision avoidance
+
 
 Usage :
 

@@ -5,7 +5,6 @@ import org.blackpanther.math.Point3D;
 import org.blackpanther.math.Vector3D;
 
 import java.awt.*;
-import java.awt.image.BufferedImage;
 
 import static org.blackpanther.math.Cube.*;
 
@@ -13,33 +12,16 @@ import static org.blackpanther.math.Cube.*;
  * @author MACHIZAUD AndrÃ©a
  * @version 9/29/11
  */
-public class CubeRender {
+public class CubeRender extends AbstractRenderer<Cube> {
     private static final java.util.logging.Logger logger =
             java.util.logging.Logger.getLogger(CubeRender.class.getCanonicalName());
-
-    public static final float MAXIMUM_POINT_OF_VIEW_HEIGHT = 400f;
 
     public enum DrawMode {
         FILL,
         LINE
     }
 
-    /**
-     * Buffer où l'on dessine
-     */
-    private final BufferedImage imgBuffer;
-    /**
-     * Ecart avec le bord
-     */
-    private int padding;
-    /**
-     * Référence vers un modèle de cube
-     */
-    private Cube refCube;
-    private final int cubeSide;
-
-    private final Point3D cubeOrigin;
-    private Point3D pointOfView;
+    private final float cubeSide;
 
     private Vector3D towardUserPointOfView;
 
@@ -47,79 +29,29 @@ public class CubeRender {
 
     public CubeRender(
             final Cube cube,
-            final int sideSize,
+            final float sideSize,
             final DrawMode mode,
             final Dimension dimension
     ) {
-        imgBuffer = new BufferedImage(
-                dimension.width,
-                dimension.height,
-                BufferedImage.TYPE_INT_ARGB
-        );
-
-        padding = 40;
+        super(cube, dimension);
 
         cubeSide = sideSize;
-        cubeOrigin = new Point3D(
-                dimension.width / 2f,
-                dimension.height / 2f,
-                0f
-        );
-        //user is just above the cube
-        setPointOfView(
-                cubeOrigin.getX(),
-                cubeOrigin.getY(),
-                MAXIMUM_POINT_OF_VIEW_HEIGHT - 100f
-        );
-
-        setCube(cube);
 
         this.mode = mode;
     }
 
-    public final void render() {
-        final Graphics2D painter = (Graphics2D) imgBuffer.getGraphics();
-        painter.setColor(Color.WHITE);
-        painter.fillRect(0, 0, imgBuffer.getWidth(), imgBuffer.getHeight());
+    @Override
+    public Point3D normalized(Point3D point) {
+        final float halfSide = cubeSide / 2f;
+        return new Point3D(
+                point.getX() / halfSide,
+                point.getY() / halfSide,
+                point.getZ() / halfSide
+        );
+    }
 
-        //render fixed referential axes
-        painter.setColor(Color.BLACK);
-        painter.fillOval(
-                math2pixel(cubeOrigin).x,
-                math2pixel(cubeOrigin).y,
-                5, 5
-        );
-
-        //forget constant, just some padding
-        //abscissa axe
-        painter.drawLine(
-                padding, imgBuffer.getHeight() - padding,
-                imgBuffer.getWidth() - 2 * padding, imgBuffer.getHeight() - padding
-        );
-        painter.drawString(
-                "Abscissa",
-                5 + imgBuffer.getWidth() - 2 * padding, imgBuffer.getHeight() - padding
-        );
-        //ordinate axe
-        painter.drawLine(
-                padding, imgBuffer.getHeight() - padding,
-                padding, padding
-        );
-        painter.drawString(
-                "Ordinate",
-                padding, padding - 5
-        );
-        //height axe
-        painter.drawOval(
-                (int) (padding * .75f), imgBuffer.getHeight() - (int) (padding * 1.25f),
-                padding / 2, padding / 2
-        );
-        painter.drawString(
-                "Height",
-                (int) (padding * 1.25f), imgBuffer.getHeight() - (int) (padding * .5f)
-        );
-
-        final Point3D[] mathPoints = refCube.getPoints();
+    public final void modelRender(Graphics2D painter) {
+        final Point3D[] mathPoints = getShape().getPoints();
         final Point[] screenPoints = new Point[mathPoints.length];
 
         //first translate fixed referential to cube referential,
@@ -128,7 +60,7 @@ public class CubeRender {
             screenPoints[pointCode] =
                     math2pixel(
                             fixedReferential(
-                                    expand(mathPoints[pointCode], cubeSide / 2f, pointOfView)
+                                    expand(mathPoints[pointCode], cubeSide / 2f, getPointOfView())
                             )
                     );
         }
@@ -194,7 +126,7 @@ public class CubeRender {
                 final Point3D[] perspectivePoints = new Point3D[8];
                 for (int index = mathPoints.length; index-- > 0; ) {
                     perspectivePoints[index] =
-                            expand(mathPoints[index], cubeSide / 2f, pointOfView);
+                            expand(mathPoints[index], cubeSide / 2f, getPointOfView());
                 }
 
                 logger.fine("Toward point of view : " + towardUserPointOfView);
@@ -374,46 +306,12 @@ public class CubeRender {
                     break;
             }
         }
-
-        painter.dispose();
     }
 
-    /**
-     * Expand a point through the alignment from the cube's center,
-     * and compute position relative to the point of view
-     *
-     * @param point       - point from cube's referential
-     * @param length      - length to expland
-     * @param pointOfView - position of the point of view
-     * @return - expanded point
-     */
-    private Point3D expand(Point3D point, float length, Point3D pointOfView) {
-        final float viewRatio =
-                (MAXIMUM_POINT_OF_VIEW_HEIGHT - pointOfView.getZ()) /
-                        (MAXIMUM_POINT_OF_VIEW_HEIGHT - (point.getZ() * length));
-        final float realSide = length * viewRatio;
-        return new Point3D(
-                point.getX() * realSide,
-                point.getY() * realSide,
-                point.getZ() * realSide
-        );
-    }
-
-    public void setPointOfView(final Point3D pov) {
-        setPointOfView(pov.getX(), pov.getY(), pov.getZ());
-    }
-
+    @Override
     public void setPointOfView(float x, float y, float z) {
-        this.pointOfView = new Point3D(x, y, z);
-        this.towardUserPointOfView = new Vector3D(cubeOrigin, pointOfView);
-    }
-
-    public final Point3D getPointOfView() {
-        return pointOfView;
-    }
-
-    public final void setCube(final Cube cube) {
-        this.refCube = cube;
+        super.setPointOfView(x, y, z);
+        this.towardUserPointOfView = new Vector3D(getShapeOrigin(), getPointOfView());
     }
 
     private Vector3D[] getNormal(final Point3D[] points, final int face) {
@@ -451,34 +349,5 @@ public class CubeRender {
             default:
                 throw new IllegalArgumentException("Unknown face ! " + face);
         }
-    }
-
-    public final Cube getCube() {
-        return refCube;
-    }
-
-    public final BufferedImage getBuffer() {
-        return imgBuffer;
-    }
-
-    private Point3D fixedReferential(Point3D cubeReferential) {
-        return new Point3D(
-                cubeReferential.getX() + cubeOrigin.getX(),
-                cubeReferential.getY() + cubeOrigin.getY(),
-                cubeReferential.getZ() + cubeOrigin.getZ()
-        );
-    }
-
-    /**
-     * Fixed refrential is the bottom left corner
-     *
-     * @param point - math point
-     * @return screen point
-     */
-    private Point math2pixel(Point3D point) {
-        return new Point(
-                (int) point.getX(),
-                getBuffer().getHeight() - (int) point.getY()
-        );
     }
 }

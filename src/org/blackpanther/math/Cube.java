@@ -4,7 +4,7 @@ package org.blackpanther.math;
  * @author MACHIZAUD Andréa
  * @version 9/29/11
  */
-public class Cube {
+public class Cube implements Shape{
     private static final java.util.logging.Logger logger =
             java.util.logging.Logger.getLogger(Cube.class.getCanonicalName());
 
@@ -103,6 +103,11 @@ public class Cube {
             );
         }
         return new Cube(rotatedPoints);
+    }
+
+    @Override
+    public boolean contains(Point3D nextPointOfView) {
+        throw new UnsupportedOperationException("Not yet implemented");
     }
 
     @Override

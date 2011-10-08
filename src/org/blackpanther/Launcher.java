@@ -1,14 +1,17 @@
 package org.blackpanther;
 
-import org.blackpanther.math.Cube;
-import org.blackpanther.math.Point3D;
-import org.blackpanther.render.CubeFrame;
-import org.blackpanther.render.CubeRender;
-
-import java.awt.*;
+import java.awt.Frame;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.logging.LogManager;
+
+import org.blackpanther.math.Point3D;
+import org.blackpanther.math.Shape;
+import org.blackpanther.math.Sphere;
+import org.blackpanther.render.CubeRender;
+import org.blackpanther.render.Renderer;
+import org.blackpanther.render.SceneFrame;
+import org.blackpanther.render.SphereRender;
 
 /**
  * @author MACHIZAUD Andréa
@@ -50,29 +53,34 @@ public class Launcher {
         logger.info("Draw mode set to " + mode);
 
         //load model
-        final Cube cube;
-        if (index == 0) { //no data given, assumed a default cube with CBGF visible only
-            cube = new Cube();
-        } else if (index == 24) { //create a cube (assume given data are correct) by given data
-            cube = new Cube(buildApex(apex));
-        } else { //not enough data given
-            throw new IllegalArgumentException(
-                    "Not enough point data received to build a cube, " +
-                            "please provide exactly 8 3-dimensional points data"
-            );
-        }
-        logger.info("Initial cube : \n" + cube);
+        final Shape shape;
+//        if (index == 0) { //no data given, assumed a default cube with CBGF visible only
+//            shape = new Cube();
+//        } else if (index == 24) { //create a cube (assume given data are correct) by given data
+//            shape = new Cube(buildApex(apex));
+//        } else { //not enough data given
+//            throw new IllegalArgumentException(
+//                    "Not enough point data received to build a cube, " +
+//                            "please provide exactly 8 3-dimensional points data"
+//            );
+//        }
+        shape = new Sphere();
+        logger.info("Initial shape : " + shape);
 
-        final int cubeSide = 200;
+        final float side = 100f;
 
         //load render engine
-        final CubeRender renderer = new CubeRender(
-                cube, cubeSide,
-                mode,
-                CubeFrame.DRAWING_AREA);
+//        final Renderer renderer = new CubeRender(
+//                (Cube) shape, cubeSide,
+//                mode,
+//                SceneFrame.DRAWING_AREA);
+        final Renderer renderer = new SphereRender(
+        		(Sphere) shape,
+        		side,
+        		SceneFrame.DRAWING_AREA);
 
         //wrap it into a nice frame
-        final Frame frame = new CubeFrame(renderer);
+        final Frame frame = new SceneFrame(renderer);
 
         //first render
         renderer.render();

@@ -1,16 +1,16 @@
 package org.blackpanther.render;
 
-import org.blackpanther.math.Cube;
-import org.blackpanther.math.Rotation;
-import org.blackpanther.math.Transformation;
+import static java.lang.Math.cos;
+import static java.lang.Math.sin;
 
-import java.awt.*;
+import java.awt.Canvas;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.logging.Logger;
 
-import static java.lang.Math.cos;
-import static java.lang.Math.sin;
+import org.blackpanther.math.Rotation;
+import org.blackpanther.math.Shape;
+import org.blackpanther.math.Transformation;
 
 /**
  * @author MACHIZAUD Andréa
@@ -28,13 +28,13 @@ public class TransformHandler implements ActionListener {
     public static final String Z_PLUS = "z-plus";
     public static final String Z_MINUS = "z-minus";
 
-    private final CubeRender renderer;
+    private final Renderer renderer;
     private final Canvas scene;
 
     private final double step = Math.PI / 12.0;
 
     public TransformHandler(
-            final CubeRender renderer,
+            final Renderer renderer,
             final Canvas scene
     ) {
         this.renderer = renderer;
@@ -98,17 +98,17 @@ public class TransformHandler implements ActionListener {
                 new Rotation(matrix);
 
         //create the resulting cube
-        final Cube rotatedCube =
-                renderer.getCube().transform(transformation);
+        final Shape rotatedShape =
+                renderer.getShape().transform(transformation);
 
         logger.finer(String.format(
                 "%s rotated to %s",
-                renderer.getCube(),
-                rotatedCube
+                renderer.getShape(),
+                rotatedShape
         ));
 
         //pass it back to the renderer
-        renderer.setCube(rotatedCube);
+        renderer.setShape(rotatedShape);
 
         //and render it
         renderer.render();

@@ -6,13 +6,13 @@ import java.awt.*;
  * @author MACHIZAUD Andréa
  * @version 9/29/11
  */
-public class CubeScene extends Canvas {
+public class Scene extends Canvas {
     private static final java.util.logging.Logger logger =
-            java.util.logging.Logger.getLogger(CubeScene.class.getCanonicalName());
+            java.util.logging.Logger.getLogger(Scene.class.getCanonicalName());
 
-    private final CubeRender renderer;
+    private final Renderer renderer;
 
-    public CubeScene(CubeRender renderer, Dimension dimension) {
+    public Scene(Renderer renderer, Dimension dimension) {
         setPreferredSize(dimension);
         this.renderer = renderer;
     }

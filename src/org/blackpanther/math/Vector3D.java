@@ -29,6 +29,16 @@ public class Vector3D {
     }
 
     /**
+     * Constructor with 3D spaced parameter
+     *
+     * @param point - point
+     */
+    public Vector3D(final Point3D point)
+    {
+        this(point.getX(),point.getY(),point.getZ());
+    }
+
+    /**
      * Constructor with two points
      *
      * @param origin      - vector's origin
@@ -88,7 +98,7 @@ public class Vector3D {
      * Compute the oriented angle between this vector and given one
      *
      * @param rawV - vector to compute angle with
-     * @return oriented angle between this vector and the given one
+     * @return oriented angle between this vector and the given one  [-PI;PI]
      */
     public final double angle(Vector3D rawV) {
         final Vector3D u = this.normalize();
