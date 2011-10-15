@@ -5,6 +5,7 @@ import org.blackpanther.math.Point3D;
 import org.blackpanther.math.Vector3D;
 
 import java.awt.*;
+import java.awt.image.BufferedImage;
 
 import static org.blackpanther.math.Cube.*;
 
@@ -50,7 +51,9 @@ public class CubeRender extends AbstractRenderer<Cube> {
         );
     }
 
-    public final void modelRender(Graphics2D painter) {
+    protected final void modelRender(final BufferedImage _buffer) {
+        final Graphics2D painter = (Graphics2D) _buffer.getGraphics();
+
         final Point3D[] mathPoints = getShape().getPoints();
         final Point[] screenPoints = new Point[mathPoints.length];
 

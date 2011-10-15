@@ -1,6 +1,6 @@
 package org.blackpanther.render;
 
-import java.awt.Image;
+import java.awt.*;
 
 import org.blackpanther.math.Point3D;
 import org.blackpanther.math.Shape;
@@ -21,4 +21,6 @@ public interface Renderer<S extends Shape> {
 
     public Point3D normalized(Point3D rawPoint);
 
+    public Point3D pixel2math(Point point);
+    public Point math2pixel(Point3D point);
 }

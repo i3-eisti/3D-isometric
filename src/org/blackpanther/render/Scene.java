@@ -15,6 +15,12 @@ public class Scene extends Canvas {
     public Scene(Renderer renderer, Dimension dimension) {
         setPreferredSize(dimension);
         this.renderer = renderer;
+
+        final MouseFollowingPointOfView povMouseHandler =
+                new MouseFollowingPointOfView(renderer,this);
+
+        addMouseMotionListener(povMouseHandler);
+        addMouseWheelListener(povMouseHandler);
     }
 
     @Override

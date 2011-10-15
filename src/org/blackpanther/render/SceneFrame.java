@@ -32,7 +32,7 @@ public final class SceneFrame extends Frame {
         final Label lblRotation = new Label("Rotation : ");
         final Label lblRotationAbscissa = new Label("    X ");
         final Label lblRotationOrdinate = new Label("    Y ");
-        final Label lblRotationHeight =   new Label("    Z ");
+        final Label lblRotationHeight = new Label("    Z ");
 
         //point of view commands
         final Button[] bPointOfViewAbscissa = new Button[]{
@@ -48,10 +48,10 @@ public final class SceneFrame extends Frame {
         final Label lblPointOfView = new Label("PointOfView : ");
         final Label lblPointOfViewAbscissa = new Label("    X ");
         final Label lblPointOfViewOrdinate = new Label("    Y ");
-        final Label lblPointOfViewHeight =   new Label("    Z ");
+        final Label lblPointOfViewHeight = new Label("    Z ");
 
         final ActionListener rotationHandler = new TransformHandler(renderer, scene);
-        final ActionListener povHandler = new PointOfViewHandler(renderer, scene);
+        final ActionListener povHandler = new IncrementalPointOfView(renderer, scene);
 
         bRotationAbscissa[0].setActionCommand(TransformHandler.X_MINUS);
         bRotationAbscissa[1].setActionCommand(TransformHandler.X_PLUS);
@@ -67,12 +67,12 @@ public final class SceneFrame extends Frame {
         bRotationHeight[0].addActionListener(rotationHandler);
         bRotationHeight[1].addActionListener(rotationHandler);
 
-        bPointOfViewAbscissa[0].setActionCommand(PointOfViewHandler.X_MINUS);
-        bPointOfViewAbscissa[1].setActionCommand(PointOfViewHandler.X_PLUS);
-        bPointOfViewOrdinate[0].setActionCommand(PointOfViewHandler.Y_MINUS);
-        bPointOfViewOrdinate[1].setActionCommand(PointOfViewHandler.Y_PLUS);
-        bPointOfViewHeight[0].setActionCommand(PointOfViewHandler.Z_MINUS);
-        bPointOfViewHeight[1].setActionCommand(PointOfViewHandler.Z_PLUS);
+        bPointOfViewAbscissa[0].setActionCommand(IncrementalPointOfView.X_MINUS);
+        bPointOfViewAbscissa[1].setActionCommand(IncrementalPointOfView.X_PLUS);
+        bPointOfViewOrdinate[0].setActionCommand(IncrementalPointOfView.Y_MINUS);
+        bPointOfViewOrdinate[1].setActionCommand(IncrementalPointOfView.Y_PLUS);
+        bPointOfViewHeight[0].setActionCommand(IncrementalPointOfView.Z_MINUS);
+        bPointOfViewHeight[1].setActionCommand(IncrementalPointOfView.Z_PLUS);
 
         bPointOfViewAbscissa[0].addActionListener(povHandler);
         bPointOfViewAbscissa[1].addActionListener(povHandler);
@@ -130,6 +130,7 @@ public final class SceneFrame extends Frame {
         addWindowListener(new WindowAdapter() {
             @Override
             public void windowClosing(WindowEvent e) {
+                AbstractPointOfViewHandler.executor.shutdownNow();
                 dispose();
             }
         });
@@ -137,6 +138,7 @@ public final class SceneFrame extends Frame {
             @Override
             public void keyPressed(KeyEvent e) {
                 if (e.getKeyCode() == KeyEvent.VK_ESCAPE) {
+                    AbstractPointOfViewHandler.executor.shutdownNow();
                     dispose();
                 }
             }

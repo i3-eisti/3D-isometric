@@ -5,13 +5,18 @@ import org.blackpanther.math.Shape;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
+import java.util.logging.Logger;
 
 public abstract class AbstractRenderer<S extends Shape> implements Renderer<S> {
+
+    private static final Logger logger =
+            Logger.getLogger(AbstractRenderer.class.getCanonicalName());
 
     public static final int PADDING = 40;
     public static final float MAXIMUM_POINT_OF_VIEW_HEIGHT = 800f;
 
     private final BufferedImage imgBuffer;
+    private final Object _lock = new Object();
 
     private S refShape;
 
@@ -44,7 +49,12 @@ public abstract class AbstractRenderer<S extends Shape> implements Renderer<S> {
 
     @Override
     public void render() {
-        final Graphics2D painter = (Graphics2D) imgBuffer.getGraphics();
+        final BufferedImage _buffer = new BufferedImage(
+                getBufferWidth(),
+                getBufferHeight(),
+                BufferedImage.TYPE_INT_ARGB
+        );
+        final Graphics2D painter = (Graphics2D) _buffer.getGraphics();
         painter.setColor(Color.WHITE);
         painter.fillRect(0, 0, imgBuffer.getWidth(), imgBuffer.getHeight());
 
@@ -85,15 +95,40 @@ public abstract class AbstractRenderer<S extends Shape> implements Renderer<S> {
                 (int) (PADDING * 1.25f), imgBuffer.getHeight() - (int) (PADDING * .5f)
         );
 
-        modelRender(painter);
+        modelRender(_buffer);
 
         painter.dispose();
+
+        logger.finer("Attempt to draw onto internal buffer");
+//        synchronized (_lock) {
+            final Graphics _painter = imgBuffer.createGraphics();
+            _painter.drawImage(
+                    _buffer,
+                    0,
+                    0,
+                    null
+            );
+            _painter.dispose();
+            logger.finer("Drawing onto internal buffer done.");
+//        }
     }
 
-    abstract void modelRender(Graphics2D painter);
+    abstract protected void modelRender(final BufferedImage _buffer);
 
     public final BufferedImage getBuffer() {
-        return imgBuffer;
+        logger.finer("Attempt to get buffer");
+//        synchronized (_lock) {
+            logger.finer("Buffer acquisition.");
+            return imgBuffer;
+//        }
+    }
+
+    public final int getBufferWidth(){
+        return imgBuffer.getWidth();
+    }
+
+    public final int getBufferHeight(){
+        return imgBuffer.getHeight();
     }
 
     public Point3D getShapeOrigin() {
@@ -151,17 +186,17 @@ public abstract class AbstractRenderer<S extends Shape> implements Renderer<S> {
      * @param point - math point
      * @return screen point
      */
-    protected Point math2pixel(Point3D point) {
+    public Point math2pixel(Point3D point) {
         return new Point(
                 (int) point.getX(),
-                getBuffer().getHeight() - (int) point.getY()
+                getBufferHeight() - (int) point.getY()
         );
     }
 
-    protected Point3D pixel2math(Point screen) {
+    public Point3D pixel2math(Point screen) {
         return new Point3D.Incomplete(
                 (float) screen.getX(),
-                (float) (getBuffer().getHeight() - screen.getY())
+                (float) (getBufferHeight() - screen.getY())
         );
     }
 
