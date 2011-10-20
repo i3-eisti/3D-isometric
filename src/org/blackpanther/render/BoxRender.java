@@ -1,5 +1,6 @@
 package org.blackpanther.render;
 
+import org.blackpanther.math.Box;
 import org.blackpanther.math.Cube;
 import org.blackpanther.math.Point3D;
 import org.blackpanther.math.Vector3D;
@@ -7,15 +8,15 @@ import org.blackpanther.math.Vector3D;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 
-import static org.blackpanther.math.Cube.*;
+import static org.blackpanther.math.BoxConstants.*;
 
 /**
- * @author MACHIZAUD AndrÃ©a
+ * @author MACHIZAUD Andréa
  * @version 9/29/11
  */
-public class CubeRender extends AbstractRenderer<Cube> {
+public class BoxRender extends AbstractRenderer<Box> {
     private static final java.util.logging.Logger logger =
-            java.util.logging.Logger.getLogger(CubeRender.class.getCanonicalName());
+            java.util.logging.Logger.getLogger(BoxRender.class.getCanonicalName());
 
     public enum DrawMode {
         FILL,
@@ -28,8 +29,8 @@ public class CubeRender extends AbstractRenderer<Cube> {
 
     private final DrawMode mode;
 
-    public CubeRender(
-            final Cube cube,
+    public BoxRender(
+            final Box cube,
             final float sideSize,
             final DrawMode mode,
             final Dimension dimension
@@ -68,6 +69,7 @@ public class CubeRender extends AbstractRenderer<Cube> {
                     );
         }
 
+        painter.setColor(Color.BLACK);
         final Stroke defaultStroke = painter.getStroke();
 
         //make line little thicker
@@ -142,7 +144,7 @@ public class CubeRender extends AbstractRenderer<Cube> {
 
                     logger.info(String.format(
                             "%s : %s * %s = %s",
-                            Cube.faceText(face),
+                            FACES_TEXT[face],
                             faceVector[0],
                             faceVector[1],
                             normal

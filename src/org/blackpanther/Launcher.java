@@ -1,17 +1,16 @@
 package org.blackpanther;
 
-import java.awt.Frame;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.logging.LogManager;
-
-import org.blackpanther.math.Point3D;
+import org.blackpanther.math.*;
 import org.blackpanther.math.Shape;
-import org.blackpanther.math.Sphere;
-import org.blackpanther.render.CubeRender;
+import org.blackpanther.render.BoxRender;
 import org.blackpanther.render.Renderer;
 import org.blackpanther.render.SceneFrame;
 import org.blackpanther.render.SphereRender;
+
+import java.awt.*;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.logging.LogManager;
 
 /**
  * @author MACHIZAUD Andréa
@@ -21,6 +20,12 @@ public class Launcher {
 
     private static final java.util.logging.Logger logger =
             java.util.logging.Logger.getLogger(Launcher.class.getCanonicalName());
+
+    enum DrawnShape {
+        Cube,
+        Box,
+        Sphere
+    }
 
     public static void main(String[] args) {
 
@@ -35,49 +40,43 @@ public class Launcher {
             logger.severe("Couldn't load logger configuration " + e.getLocalizedMessage());
         }
 
-        CubeRender.DrawMode mode = CubeRender.DrawMode.LINE;
+        BoxRender.DrawMode mode = BoxRender.DrawMode.LINE;
 
-        //cube point data buffer
-        final float[] apex = new float[24];
-        int index = 0;
+        final float side = 300f;
+
+        Shape shape = new Box();
+        Renderer renderer = new BoxRender(
+                (Box) shape,
+                side,
+                BoxRender.DrawMode.FILL,
+                SceneFrame.DRAWING_AREA
+        );
 
         //processing parameter
         for (String arg : args) {
             if (arg.equals("--fill")) {
-                mode = CubeRender.DrawMode.FILL;
-            } else {
-                apex[index++] = Float.parseFloat(arg);
+                mode = BoxRender.DrawMode.FILL;
+            } else if (arg.equals("--cube")) {
+                shape = new Cube();
+                renderer = new BoxRender(
+                        (Box) shape,
+                        side,
+                        mode,
+                        SceneFrame.DRAWING_AREA
+                );
+            } else if (arg.equals("--sphere")) {
+                shape = new Sphere();
+                renderer = new SphereRender(
+                        (Sphere) shape,
+                        side,
+                        SceneFrame.DRAWING_AREA
+                );
             }
         }
 
-        logger.info("Draw mode set to " + mode);
-
-        //load model
-        final Shape shape;
-//        if (index == 0) { //no data given, assumed a default cube with CBGF visible only
-//            shape = new Cube();
-//        } else if (index == 24) { //create a cube (assume given data are correct) by given data
-//            shape = new Cube(buildApex(apex));
-//        } else { //not enough data given
-//            throw new IllegalArgumentException(
-//                    "Not enough point data received to build a cube, " +
-//                            "please provide exactly 8 3-dimensional points data"
-//            );
-//        }
-        shape = new Sphere();
+        if (renderer instanceof BoxRender)
+            logger.info("Draw mode set to " + mode);
         logger.info("Initial shape : " + shape);
-
-        final float side = 100f;
-
-        //load render engine
-//        final Renderer renderer = new CubeRender(
-//                (Cube) shape, cubeSide,
-//                mode,
-//                SceneFrame.DRAWING_AREA);
-        final Renderer renderer = new SphereRender(
-        		(Sphere) shape,
-        		side,
-        		SceneFrame.DRAWING_AREA);
 
         //wrap it into a nice frame
         final Frame frame = new SceneFrame(renderer);
