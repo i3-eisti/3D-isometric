@@ -3,6 +3,7 @@ package org.blackpanther.render;
 import org.blackpanther.math.Point3D;
 import org.blackpanther.math.Shape;
 
+import javax.swing.*;
 import java.awt.*;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -20,14 +21,16 @@ public abstract class AbstractPointOfViewHandler {
     public static final ExecutorService executor = Executors.newFixedThreadPool(1);
 
     private final Renderer renderer;
-    private final Canvas scene;
+    private final JPanel scene;
+    private final JLabel label;
 
     public AbstractPointOfViewHandler(
             final Renderer renderer,
-            final Canvas scene
-    ) {
+            final JPanel scene,
+            final JLabel lblPointOfView) {
         this.renderer = renderer;
         this.scene = scene;
+        this.label = lblPointOfView;
     }
 
     protected final Renderer getRenderer() {
@@ -37,7 +40,6 @@ public abstract class AbstractPointOfViewHandler {
     protected final void setPointOfView(final Point3D pov) {
         if (!collideWithShape(pov, renderer.getShape())) {
             renderer.setPointOfView(pov);
-            logger.finer("New Point of view : " + getPointOfView());
 
             executor.submit(new Runnable() {
                 @Override

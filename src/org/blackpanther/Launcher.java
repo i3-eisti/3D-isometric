@@ -21,14 +21,7 @@ public class Launcher {
     private static final java.util.logging.Logger logger =
             java.util.logging.Logger.getLogger(Launcher.class.getCanonicalName());
 
-    enum DrawnShape {
-        Cube,
-        Box,
-        Sphere
-    }
-
     public static void main(String[] args) {
-
         try {
             InputStream loggerConfig =
                     Launcher.class.getClassLoader().getResourceAsStream(
@@ -42,13 +35,13 @@ public class Launcher {
 
         BoxRender.DrawMode mode = BoxRender.DrawMode.LINE;
 
-        final float side = 300f;
+        final float side = 200f;
 
         Shape shape = new Box();
         Renderer renderer = new BoxRender(
                 (Box) shape,
                 side,
-                BoxRender.DrawMode.FILL,
+                mode,
                 SceneFrame.DRAWING_AREA
         );
 
@@ -56,6 +49,8 @@ public class Launcher {
         for (String arg : args) {
             if (arg.equals("--fill")) {
                 mode = BoxRender.DrawMode.FILL;
+            } else if (arg.equals("--line")) {
+                mode = BoxRender.DrawMode.LINE;
             } else if (arg.equals("--cube")) {
                 shape = new Cube();
                 renderer = new BoxRender(
@@ -87,20 +82,6 @@ public class Launcher {
         //and finally display it
         frame.setVisible(true);
         frame.requestFocus();
-    }
-
-    private static Point3D[] buildApex(float[] floatApex) {
-        final Point3D[] pointApex = new Point3D[8];
-        for (int pointIndex = 0, floatIndex = 0;
-             floatIndex < floatApex.length;
-             pointIndex++, floatIndex += 3) {
-            pointApex[pointIndex] = new Point3D(
-                    floatApex[floatIndex],
-                    floatApex[floatIndex + 1],
-                    floatApex[floatIndex + 2]
-            );
-        }
-        return pointApex;
     }
 
 }

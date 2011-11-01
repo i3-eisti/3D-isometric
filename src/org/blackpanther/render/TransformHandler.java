@@ -3,7 +3,7 @@ package org.blackpanther.render;
 import static java.lang.Math.cos;
 import static java.lang.Math.sin;
 
-import java.awt.Canvas;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.logging.Logger;
@@ -11,6 +11,8 @@ import java.util.logging.Logger;
 import org.blackpanther.math.Rotation;
 import org.blackpanther.math.Shape;
 import org.blackpanther.math.Transformation;
+
+import javax.swing.*;
 
 /**
  * @author MACHIZAUD Andréa
@@ -29,14 +31,13 @@ public class TransformHandler implements ActionListener {
     public static final String Z_MINUS = "z-minus";
 
     private final Renderer renderer;
-    private final Canvas scene;
+    private final JPanel scene;
 
     private final double step = Math.PI / 12.0;
 
     public TransformHandler(
             final Renderer renderer,
-            final Canvas scene
-    ) {
+            final JPanel scene) {
         this.renderer = renderer;
         this.scene = scene;
     }

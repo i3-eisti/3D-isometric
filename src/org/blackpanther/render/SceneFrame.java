@@ -1,5 +1,6 @@
 package org.blackpanther.render;
 
+import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 
@@ -7,51 +8,43 @@ import java.awt.event.*;
  * @author MACHIZAUD Andréa
  * @version 01/10/11
  */
-public final class SceneFrame extends Frame {
+public final class SceneFrame extends JFrame {
 
     public static final Dimension DRAWING_AREA = new Dimension(500, 500);
 
     public SceneFrame(
             final Renderer renderer
-    ) throws HeadlessException {
+    ) {
         super("Cube manipulation");
 
-        final Canvas scene = new Scene(renderer, DRAWING_AREA);
+        final JPanel scene = new Scene(renderer, DRAWING_AREA);
 
         //rotation commands
-        final Button[] bRotationAbscissa = new Button[]{
-                new Button("-"), new Button("+")
+        final JButton[] bRotationAbscissa = new JButton[]{
+                new JButton("-"), new JButton("+")
         };
-        final Button[] bRotationOrdinate = new Button[]{
-                new Button("-"), new Button("+")
+        final JButton[] bRotationOrdinate = new JButton[]{
+                new JButton("-"), new JButton("+")
         };
-        final Button[] bRotationHeight = new Button[]{
-                new Button("-"), new Button("+")
-        };
-
-        final Label lblRotation = new Label("Rotation : ");
-        final Label lblRotationAbscissa = new Label("    X ");
-        final Label lblRotationOrdinate = new Label("    Y ");
-        final Label lblRotationHeight = new Label("    Z ");
-
-        //point of view commands
-        final Button[] bPointOfViewAbscissa = new Button[]{
-                new Button("-"), new Button("+")
-        };
-        final Button[] bPointOfViewOrdinate = new Button[]{
-                new Button("-"), new Button("+")
-        };
-        final Button[] bPointOfViewHeight = new Button[]{
-                new Button("-"), new Button("+")
+        final JButton[] bRotationHeight = new JButton[]{
+                new JButton("-"), new JButton("+")
         };
 
-        final Label lblPointOfView = new Label("PointOfView : ");
-        final Label lblPointOfViewAbscissa = new Label("    X ");
-        final Label lblPointOfViewOrdinate = new Label("    Y ");
-        final Label lblPointOfViewHeight = new Label("    Z ");
+        final JLabel lblRotation = new JLabel("Rotation : ");
+        final JLabel lblRotationAbscissa = new JLabel("    X ");
+        final JLabel lblRotationOrdinate = new JLabel("    Y ");
+        final JLabel lblRotationHeight = new JLabel("    Z ");
+
+        final JLabel lblPointOfView = new JLabel("PointOfView : ");
 
         final ActionListener rotationHandler = new TransformHandler(renderer, scene);
-        final ActionListener povHandler = new IncrementalPointOfView(renderer, scene);
+        final ActionListener povHandler = new IncrementalPointOfView(renderer, scene, lblPointOfView);
+
+        final MouseFollowingPointOfView povMouseHandler =
+                new MouseFollowingPointOfView(renderer, scene, lblPointOfView);
+
+        scene.addMouseMotionListener(povMouseHandler);
+        scene.addMouseWheelListener(povMouseHandler);
 
         bRotationAbscissa[0].setActionCommand(TransformHandler.X_MINUS);
         bRotationAbscissa[1].setActionCommand(TransformHandler.X_PLUS);
@@ -67,59 +60,34 @@ public final class SceneFrame extends Frame {
         bRotationHeight[0].addActionListener(rotationHandler);
         bRotationHeight[1].addActionListener(rotationHandler);
 
-        bPointOfViewAbscissa[0].setActionCommand(IncrementalPointOfView.X_MINUS);
-        bPointOfViewAbscissa[1].setActionCommand(IncrementalPointOfView.X_PLUS);
-        bPointOfViewOrdinate[0].setActionCommand(IncrementalPointOfView.Y_MINUS);
-        bPointOfViewOrdinate[1].setActionCommand(IncrementalPointOfView.Y_PLUS);
-        bPointOfViewHeight[0].setActionCommand(IncrementalPointOfView.Z_MINUS);
-        bPointOfViewHeight[1].setActionCommand(IncrementalPointOfView.Z_PLUS);
-
-        bPointOfViewAbscissa[0].addActionListener(povHandler);
-        bPointOfViewAbscissa[1].addActionListener(povHandler);
-        bPointOfViewOrdinate[0].addActionListener(povHandler);
-        bPointOfViewOrdinate[1].addActionListener(povHandler);
-        bPointOfViewHeight[0].addActionListener(povHandler);
-        bPointOfViewHeight[1].addActionListener(povHandler);
-
-        final Panel panRotationButtons = new Panel();
+        final JPanel panRotationJButtons = new JPanel();
         final LayoutManager squeezedFlow = new FlowLayout(
                 FlowLayout.LEFT,
                 10, 5
         );
 
-        panRotationButtons.setLayout(squeezedFlow);
+        panRotationJButtons.setLayout(squeezedFlow);
 
-        panRotationButtons.add(lblRotation);
-        panRotationButtons.add(bRotationAbscissa[0]);
-        panRotationButtons.add(lblRotationAbscissa);
-        panRotationButtons.add(bRotationAbscissa[1]);
-        panRotationButtons.add(bRotationOrdinate[0]);
-        panRotationButtons.add(lblRotationOrdinate);
-        panRotationButtons.add(bRotationOrdinate[1]);
-        panRotationButtons.add(bRotationHeight[0]);
-        panRotationButtons.add(lblRotationHeight);
-        panRotationButtons.add(bRotationHeight[1]);
+        panRotationJButtons.add(lblRotation);
+        panRotationJButtons.add(bRotationAbscissa[0]);
+        panRotationJButtons.add(lblRotationAbscissa);
+        panRotationJButtons.add(bRotationAbscissa[1]);
+        panRotationJButtons.add(bRotationOrdinate[0]);
+        panRotationJButtons.add(lblRotationOrdinate);
+        panRotationJButtons.add(bRotationOrdinate[1]);
+        panRotationJButtons.add(bRotationHeight[0]);
+        panRotationJButtons.add(lblRotationHeight);
+        panRotationJButtons.add(bRotationHeight[1]);
 
-        final Panel panPointOfViewButtons = new Panel();
+        final JPanel panPointOfView = new JPanel();
 
-        panPointOfViewButtons.setLayout(squeezedFlow);
-
-        panPointOfViewButtons.add(lblPointOfView);
-        panPointOfViewButtons.add(bPointOfViewAbscissa[0]);
-        panPointOfViewButtons.add(lblPointOfViewAbscissa);
-        panPointOfViewButtons.add(bPointOfViewAbscissa[1]);
-        panPointOfViewButtons.add(bPointOfViewOrdinate[0]);
-        panPointOfViewButtons.add(lblPointOfViewOrdinate);
-        panPointOfViewButtons.add(bPointOfViewOrdinate[1]);
-        panPointOfViewButtons.add(bPointOfViewHeight[0]);
-        panPointOfViewButtons.add(lblPointOfViewHeight);
-        panPointOfViewButtons.add(bPointOfViewHeight[1]);
+        panPointOfView.add(lblPointOfView);
 
         //content & size
         setLayout(new BorderLayout());
         add(scene, BorderLayout.CENTER);
-        add(panRotationButtons, BorderLayout.SOUTH);
-        add(panPointOfViewButtons, BorderLayout.NORTH);
+        add(panRotationJButtons, BorderLayout.SOUTH);
+        add(panPointOfView, BorderLayout.NORTH);
         pack();
         setResizable(false);
 

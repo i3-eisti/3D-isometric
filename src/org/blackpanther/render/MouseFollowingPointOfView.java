@@ -2,6 +2,7 @@ package org.blackpanther.render;
 
 import org.blackpanther.math.Point3D;
 
+import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 
@@ -19,8 +20,9 @@ public final class MouseFollowingPointOfView
 
     public MouseFollowingPointOfView(
             final Renderer renderer,
-            final Canvas scene) {
-        super(renderer, scene);
+            final JPanel scene,
+            final JLabel lblPointOfView) {
+        super(renderer, scene, lblPointOfView);
         selectedCoordinate = getPointOfView();
     }
 

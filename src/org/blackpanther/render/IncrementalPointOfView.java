@@ -2,6 +2,7 @@ package org.blackpanther.render;
 
 import org.blackpanther.math.Point3D;
 
+import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -29,9 +30,9 @@ public class IncrementalPointOfView
 
     public IncrementalPointOfView(
             final Renderer renderer,
-            final Canvas scene
-    ) {
-        super(renderer, scene);
+            final JPanel scene,
+            final JLabel lblPointOfView) {
+        super(renderer, scene, lblPointOfView);
     }
 
     @Override

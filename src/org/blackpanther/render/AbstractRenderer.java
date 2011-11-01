@@ -100,34 +100,28 @@ public abstract class AbstractRenderer<S extends Shape> implements Renderer<S> {
         painter.dispose();
 
         logger.finer("Attempt to draw onto internal buffer");
-//        synchronized (_lock) {
-            final Graphics _painter = imgBuffer.createGraphics();
-            _painter.drawImage(
-                    _buffer,
-                    0,
-                    0,
-                    null
-            );
-            _painter.dispose();
-            logger.finer("Drawing onto internal buffer done.");
-//        }
+        final Graphics _painter = imgBuffer.createGraphics();
+        _painter.drawImage(
+                _buffer,
+                0,
+                0,
+                null
+        );
+        _painter.dispose();
+        logger.finer("Drawing onto internal buffer done.");
     }
 
     abstract protected void modelRender(final BufferedImage _buffer);
 
     public final BufferedImage getBuffer() {
-        logger.finer("Attempt to get buffer");
-//        synchronized (_lock) {
-            logger.finer("Buffer acquisition.");
-            return imgBuffer;
-//        }
+        return imgBuffer;
     }
 
-    public final int getBufferWidth(){
+    public final int getBufferWidth() {
         return imgBuffer.getWidth();
     }
 
-    public final int getBufferHeight(){
+    public final int getBufferHeight() {
         return imgBuffer.getHeight();
     }
 
