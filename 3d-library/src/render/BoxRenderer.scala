@@ -30,14 +30,25 @@ object BoxRenderer extends Renderer[Box] {
     modelColor : Color
   ) {
 
+    @inline def applyPointOfView(point : ShapeReferential) : ShapeReferential = {
+      val length = Vector3D.fromOriginTo(point).euclidNorm
+      val squeezeRatio =
+        length /
+        Vector3D(shapePosition,pointOfView).euclidNorm
+      val realLength = length * squeezeRatio
+      new Point3D(
+        point.x * realLength,
+        point.y * realLength,
+        point.z * realLength
+      ) with ShapeReferential
+    }
+
     @inline def mathToScreen(point : ShapeReferential) : Point =
       math2pixel(
         bufferDimension,
         changeReferential(
           shapePosition,
-          applyPointOfView(
-            pointOfView, point, model.depth
-          )
+          applyPointOfView(point)
         )
       )
 
@@ -66,9 +77,7 @@ object BoxRenderer extends Renderer[Box] {
       drawMode match {
         case Fill =>
           val perspectivePoints : IndexedSeq[Point3D] =
-            mthPoints map  {
-              applyPointOfView(pointOfView, _, model.depth / 2f)
-            }
+            mthPoints map applyPointOfView
 
           Box.FacesCode foreach {
             (faceCode : Int) =>

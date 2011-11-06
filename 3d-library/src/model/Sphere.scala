@@ -19,7 +19,7 @@ final class Sphere(
 
   def surfacePointFrom(pt : Point2D) : (ShapeReferential, ShapeReferential) = {
     val height = sqrt(
-      radius * radius -
+      1.0 -
       pt.getX * pt.getX -
       pt.getY * pt.getY
     ).toFloat
@@ -32,9 +32,17 @@ final class Sphere(
   def contains(pt : ShapeReferential) : Boolean =
     sqrt(pt.x * pt.x + pt.y * pt.y + pt.z * pt.z).toFloat <= radius
 
+  override lazy val hashCode = Sphere.getID() + radius.##
 }
 
 object Sphere {
+
+  private var counter = 0
+
+  @inline private[Sphere] def getID() = {
+    counter += 1
+    counter
+  }
 
   val DefaultRadius = 1f
 

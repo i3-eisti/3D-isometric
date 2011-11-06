@@ -53,9 +53,19 @@ class Box(
       G.toString,
       H.toString
     )
+
+  override lazy val hashCode = Box.getID() + vertices.##
+
 }
 
 object Box {
+
+  private var counter = 0
+
+  @inline private[Box] def getID() = {
+    counter += 1
+    counter
+  }
 
   @inline def apply(
     width : Float = Box.DefaultWidth,

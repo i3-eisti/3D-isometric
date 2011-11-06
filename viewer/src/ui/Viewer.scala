@@ -50,13 +50,14 @@ class Viewer (
     rootContainer.layout += ((panPOV, BorderPanel.Position.North))
 
     val povHandler = new PointOfViewHandler(scene, canvas, lblPOV)
-    povHandler.listenTo(canvas.mouse.moves)
+    povHandler.listenTo(canvas.mouse.clicks)
     povHandler.listenTo(canvas.mouse.wheel)
 
     lblPOV.listenTo(canvas.mouse.moves)
+    lblPOV.listenTo(canvas.mouse.clicks)
     lblPOV.listenTo(canvas.mouse.wheel)
     lblPOV.reactions += {
-      case MouseMoved(_, _, _) | MouseWheelMoved(_, _, _, _) =>
+      case _ : MouseMoved | _ : MouseWheelMoved | _ : MouseClicked =>
         lblPOV.text = "Point of view: %s" format scene.pointOfView
     }
 

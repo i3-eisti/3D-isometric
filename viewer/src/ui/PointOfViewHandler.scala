@@ -1,10 +1,10 @@
 package org.blackpanther.ui
 
-import swing.event.{MouseWheelMoved, MouseMoved, Event}
 import java.awt.geom.Point2D
 import org.blackpanther.three.model.{Point3D, FixedReferential, Renderer, Scene}
 import swing.{Publisher, Label, Panel}
 import org.blackpanther.three.ui.Canvas
+import swing.event.{MouseClicked, MouseWheelMoved, MouseMoved, Event}
 
 /**
  * @author MACHIZAUD Andréa
@@ -17,10 +17,9 @@ class PointOfViewHandler(
   label : Label
 ) extends Publisher {
 
-  val Step = 20f
-
   def isDefinedAt(x: Event) = x match {
     case _ : MouseMoved => true
+    case _ : MouseClicked => true
     case _ : MouseWheelMoved => true
     case otherwise => false
   }
@@ -29,7 +28,20 @@ class PointOfViewHandler(
 
   reactions += {
 
-    case MouseMoved(_, mouseScreenPoint, _) =>
+    case MouseClicked(_, mouseScreenPoint, _, _, _)  =>
+      updatePointOfView(
+        scene,
+        canvas,
+        label,
+        scene.pointOfView map {
+          (ox: Float, oy: Float, oz: Float) =>
+            //TODO Point of view determination depends also on pov height
+            val mouseMathPoint : Point2D = Renderer.pixel2math(scene.dimension, mouseScreenPoint)
+            (mouseMathPoint.getX.toFloat, mouseMathPoint.getY.toFloat, oz)
+        }
+      )
+
+    case MouseMoved(_, mouseScreenPoint, _)  =>
       updatePointOfView(
         scene,
         canvas,
@@ -63,6 +75,8 @@ class PointOfViewHandler(
 }
 
 object PointOfViewHandler {
+
+  val Step = 60f
 
   def updatePointOfView(
     scene : Scene,

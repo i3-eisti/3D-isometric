@@ -1,11 +1,10 @@
 package org.blackpanther.three
 package model
 
-import _root_.render.SphereRenderer
 import java.awt.geom.{Dimension2D, Point2D}
 import java.awt.image.BufferedImage
-import scala.swing.{Graphics2D, Point, Color}
-import render.BoxRenderer
+import scala.swing.{Point, Color}
+import render.{BoxRenderer, SphereRenderer}
 
 /**
  * @author MACHIZAUD Andréa
@@ -53,24 +52,6 @@ object Renderer {
       scrPoint.x.toFloat,
       (bufferDimension.getHeight - scrPoint.y).toFloat
     )
-
-  def applyPointOfView(
-    pov : FixedReferential,
-    point : ShapeReferential,
-    length : Float
-  ) : ShapeReferential = {
-    val squeezeRatio : Float =
-      (Renderer.MaximumPointOfView - pov.z) /
-      (Renderer.MaximumPointOfView - (pov.z * length))
-
-    val realLength  = squeezeRatio * length
-
-    new Point3D(
-      point.x * realLength,
-      point.y * realLength,
-      point.z * realLength
-    ) with ShapeReferential
-  }
 
   def changeReferential(
     shapePosition : FixedReferential,

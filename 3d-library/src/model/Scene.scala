@@ -36,13 +36,10 @@ class Scene(
       }
   }
 
-//  var pointOfView : FixedReferential = new Point3D(
-//    width / 2f,
-//    height / 2f,
-//    MaximumPointOfView / 2f
-//  ) with FixedReferential
   var pointOfView : FixedReferential = new Point3D(
-    338f, 356f, 80f
+    width / 2f,
+    height / 2f,
+    300f
   ) with FixedReferential
 
   def +=(kv: (Shape, (FixedReferential, Color))) = {
