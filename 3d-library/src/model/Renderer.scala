@@ -4,7 +4,8 @@ package model
 import java.awt.geom.{Dimension2D, Point2D}
 import java.awt.image.BufferedImage
 import scala.swing.{Point, Color}
-import render.{BoxRenderer, SphereRenderer}
+import render.{SpringRenderer, BoxRenderer, SphereRenderer}
+import _root_.org.blackpanther.three.shapes.{Sphere, Box, Spring}
 
 /**
  * @author MACHIZAUD Andréa
@@ -12,12 +13,11 @@ import render.{BoxRenderer, SphereRenderer}
  */
 
 trait Renderer[T <: Shape] extends (
-  (BufferedImage, Dimension2D, FixedReferential, FixedReferential, T, Color) => Unit
+  (BufferedImage, FixedReferential, FixedReferential, T, Color) => Unit
 ) {
 
   def apply(
     buffer : BufferedImage,
-    bufferDimension : Dimension2D,
     pointOfView : FixedReferential,
     shapePosition : FixedReferential,
     model : T,
@@ -32,6 +32,7 @@ object Renderer {
   def forShape[T <: Shape](shape : T) : Renderer[T] = shape match {
     case _ : Box => BoxRenderer.asInstanceOf[Renderer[T]]
     case _ : Sphere => SphereRenderer.asInstanceOf[Renderer[T]]
+    case _ : Spring => SpringRenderer.asInstanceOf[Renderer[T]]
     case otherwise => sys.error("No renderer available for %s " format shape.getClass)
   }
 

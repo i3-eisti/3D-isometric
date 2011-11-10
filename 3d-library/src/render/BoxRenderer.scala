@@ -2,10 +2,10 @@ package org.blackpanther.three
 package render
 
 import swing._
-import java.awt.geom.Dimension2D
 import java.awt.{BasicStroke, Color}
 import org.blackpanther.three.model._
 import java.awt.image.BufferedImage
+import shapes.Box
 
 /**
  * @author MACHIZAUD Andréa
@@ -23,12 +23,16 @@ object BoxRenderer extends Renderer[Box] {
 
   def apply(
     buffer : BufferedImage,
-    bufferDimension : Dimension2D,
     pointOfView : FixedReferential,
     shapePosition : FixedReferential,
     model : Box,
     modelColor : Color
   ) {
+
+    val bufferDimension = new Dimension(
+      buffer.getWidth,
+      buffer.getHeight
+    )
 
     @inline def applyPointOfView(point : ShapeReferential) : ShapeReferential = {
       val length = Vector3D.fromOriginTo(point).euclidNorm

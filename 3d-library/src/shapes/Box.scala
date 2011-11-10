@@ -1,12 +1,13 @@
 package org.blackpanther.three
-package model
+package shapes
+
+import time.TimeRange
+import model.{Transformation, Vector3D, Shape, Point3D}
 
 /**
  * @author MACHIZAUD Andréa
  * @version 11/5/11
  */
-
-
 
 /**
  *   _____   F   G
@@ -39,7 +40,7 @@ class Box(
   def normalFromFace(faceCode : Int) : Vector3D =
     Box.normalFromFace(vertices, faceCode)
 
-  def transform(trans: Transformation) : Box =
+  def transform(trans: Transformation) =
     new Box(vertices map trans)
 
   override val toString =
@@ -55,6 +56,8 @@ class Box(
     )
 
   override lazy val hashCode = Box.getID() + vertices.##
+
+  def update(time: TimeRange) = this
 
 }
 

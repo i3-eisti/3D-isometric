@@ -1,9 +1,11 @@
 package org.blackpanther
 
+import three.model.{Point3D, Scene}
+import three.shapes.{Box, Sphere, Spring}
 import swing.SimpleSwingApplication
 import ui.Viewer
-import three.model.{Point3D, Scene, Box, Sphere}
 import java.awt.{Color, Dimension}
+import timer.Timeline
 
 /**
  * @author MACHIZAUD Andréa
@@ -13,6 +15,10 @@ import java.awt.{Color, Dimension}
 object Launcher extends SimpleSwingApplication {
 
   val sceneDimension = new Dimension(500, 500)
+
+  /*=========================================================================
+                          SCENE MULTI-OBJECT
+    =========================================================================*/
 
   val shape0 = Sphere(radius = 30f)
   val shape1 = Sphere(radius = 30f)
@@ -64,11 +70,19 @@ object Launcher extends SimpleSwingApplication {
   val shapeColor1 = Color.BLUE
   val shapeColor2 = Color.GREEN
 
-  scene += ((shape0, (shapePosition0, shapeColor0)))
-  scene += ((shape1, (shapePosition2, shapeColor1)))
-  scene += ((shape2, (shapePosition1, shapeColor0)))
-  scene += ((shape3, (shapePosition3, shapeColor0)))
-  scene += ((shape4, (shapePosition5, shapeColor2)))
+//  scene += ((shape0, (shapePosition0, shapeColor0)))
+//  scene += ((shape1, (shapePosition2, shapeColor1)))
+//  scene += ((shape2, (shapePosition1, shapeColor0)))
+//  scene += ((shape3, (shapePosition3, shapeColor0)))
+//  scene += ((shape4, (shapePosition5, shapeColor2)))
+  
+  /*=========================================================================
+                          SPRING
+    =========================================================================*/
+
+  val spring : Spring = new Spring
+
+  scene += ((spring, (shapePosition5, shapeColor0)))
 
   scene.render()
 

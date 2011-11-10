@@ -1,6 +1,9 @@
 package org.blackpanther.three
 package model
 
+import time.TimeRange
+
+
 /**
  * Define abstraction for modeling a shape :
  *  - metadata
@@ -13,8 +16,10 @@ package model
  * @version 11/1/11
  */
 
-trait Shape {
+trait Shape { this : Shape =>
 
-  def transform(trans : Transformation) : Shape
+  def transform(trans: Transformation): Shape
+
+  def update(time: TimeRange): Shape
 
 }

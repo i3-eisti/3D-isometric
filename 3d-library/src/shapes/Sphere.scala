@@ -1,8 +1,10 @@
 package org.blackpanther.three
-package model
+package shapes
 
 import java.awt.geom.Point2D
 import scala.math.{sqrt}
+import time.TimeRange
+import model.{Point3D, ShapeReferential, Transformation, Shape}
 
 /**
  * @author MACHIZAUD Andréa
@@ -33,6 +35,9 @@ final class Sphere(
     sqrt(pt.x * pt.x + pt.y * pt.y + pt.z * pt.z).toFloat <= radius
 
   override lazy val hashCode = Sphere.getID() + radius.##
+
+  def update(time: TimeRange) = this
+
 }
 
 object Sphere {

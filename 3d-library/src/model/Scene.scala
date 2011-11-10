@@ -8,6 +8,7 @@ import scala.swing.Dimension
 import java.awt.Color
 
 import Renderer._
+import time.TimeRange
 
 /**
  * @author MACHIZAUD Andréa
@@ -17,6 +18,7 @@ import Renderer._
 class Scene(
   val dimension : Dimension
 ) {
+
   import Scene._
 
   private var models : Map[Shape,(FixedReferential,Color)] = Map.empty[Shape,(FixedReferential, Color)]
@@ -43,7 +45,7 @@ class Scene(
   ) with FixedReferential
 
   def +=(kv: (Shape, (FixedReferential, Color))) = {
-    models += ((kv._1, kv._2))
+    models += kv
     this
   }
 
@@ -52,9 +54,34 @@ class Scene(
     this
   }
 
+  def updateTime(timeRange: TimeRange) {
+    models = models map {
+      case (shape : Shape, (position : FixedReferential, color : Color)) =>
+        (shape.update(timeRange), (position,color))
+    }
+  }
+
   def render() {
     val _buffer =
       new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB)
+
+    renderAxes(_buffer)
+
+    models.foreach{
+      case (shape : Shape, (position : FixedReferential, color : Color)) =>
+        Renderer.forShape(shape)(
+          _buffer,
+          pointOfView,
+          position,
+          shape,
+          color
+        )
+    }
+
+    swapBuffer(_buffer)
+  }
+
+  private def renderAxes(_buffer : BufferedImage) {
 
     val painter = _buffer.getGraphics.asInstanceOf[Graphics2D]
 
@@ -90,25 +117,14 @@ class Scene(
       (Padding * 1.25f), height - (Padding * .5f)
     )
     painter.dispose()
+  }
 
-    models.foreach{
-      case (shape : Shape, (position : FixedReferential, color : Color)) =>
-        Renderer.forShape(shape)(
-          _buffer,
-          dimension,
-          pointOfView,
-          position,
-          shape,
-          color
-        )
-    }
-
+  private def swapBuffer(_buffer: BufferedImage) {
     val _painter = buffer.createGraphics()
     _painter.drawImage(
       _buffer, 0, 0, width, height, null
     )
     _painter.dispose()
-
   }
 
 }

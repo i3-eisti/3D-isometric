@@ -5,6 +5,7 @@ import org.blackpanther.three.ui.Canvas
 import org.blackpanther.three.model.{Renderer, Scene}
 import swing._
 import event.{MouseClicked, MouseWheelMoved, MouseMoved}
+import timer.Timeline
 
 /**
  * @author MACHIZAUD Andréa
@@ -20,6 +21,8 @@ class Viewer (
   contents = {
 
     val canvas = new Canvas(scene)
+
+    new Timeline(scene, canvas)
 
     import TransformHandler._
 

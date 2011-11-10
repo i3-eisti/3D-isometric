@@ -1,6 +1,5 @@
 package org.blackpanther.ui
 
-import swing.event.{ActionEvent, Event}
 import org.blackpanther.three.model.Scene
 import org.blackpanther.three.model.Transformations.Rotation
 import swing.Action

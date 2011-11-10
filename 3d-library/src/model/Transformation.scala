@@ -69,9 +69,9 @@ object Transformations {
     cx: Float, cy: Float, cz: Float
   ) extends Transformation {
 
-    def apply(pt: Point3D) = pt.move(cx, cy, cz)
+    def apply(pt: Point3D) = pt.translate(cx, cy, cz)
 
-    override val toString =
+    override lazy val toString =
       "Translation [% .2f % .2f % .2f % .2f]" format (cx, cy, cz)
 
     def compose(nextTransformation: Transformation): Transformation =

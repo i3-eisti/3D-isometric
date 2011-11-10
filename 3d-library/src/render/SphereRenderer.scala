@@ -1,10 +1,11 @@
 package org.blackpanther.three
 package render
 
-import java.awt.geom.{Point2D, Dimension2D}
+import java.awt.geom.Point2D
 import swing._
-import org.blackpanther.three.model._
 import scala.math.{sqrt, cos, Pi}
+import shapes.Sphere
+import org.blackpanther.three.model.{Point3D, ShapeReferential, Vector3D, FixedReferential, Renderer}
 
 
 /**
@@ -16,12 +17,16 @@ object SphereRenderer extends Renderer[Sphere] {
 
   def apply(
     buffer : java.awt.image.BufferedImage,
-    dimension : Dimension2D,
     pointOfView : FixedReferential,
     shapePosition : FixedReferential,
     model : Sphere,
     modelColor : Color
   ) {
+
+    val dimension = new Dimension(
+      buffer.getWidth,
+      buffer.getHeight
+    )
 
     @inline def toSphereReferential(inc : Point2D) : Point2D =
       new Point2D.Double(
@@ -63,8 +68,8 @@ object SphereRenderer extends Renderer[Sphere] {
     val towardLightSource = Vector3D(shapePosition, pointOfView)
 
     for {
-      x <- 0 until dimension.getWidth.toInt
-      y <- 0 until dimension.getHeight.toInt
+      x <- 0 until dimension.width
+      y <- 0 until dimension.height
       fixedPoint = Renderer.pixel2math(dimension, new Point(x,y))
       shapePoint = toSphereReferential(fixedPoint)
       normShapePoint = normalized(shapePoint)

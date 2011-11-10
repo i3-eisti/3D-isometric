@@ -17,11 +17,17 @@ class Point3D(
   private[model] val t : Float = 1f
 )
 {
-  final def move(dx: Float = 0f, dy: Float = 0f, dz: Float = 0f) : Point3D =
+  final def translate(dx: Float = 0f, dy: Float = 0f, dz: Float = 0f) : Point3D =
     if (dx == 0f && dy == 0f && dz == 0f)
       this
     else
       new Point3D(x + dx, y + dy, z + dz)
+
+  final def translate(v : Vector3D) : Point3D =
+    if (v.cx == 0f && v.cy == 0f && v.cz == 0f)
+      this
+    else
+      new Point3D(x + v.cx, y + v.cy, z + v.cz)
 
   final def map(transf : (Float, Float, Float) => (Float, Float, Float)) : Point3D = {
     val (nx, ny, nz) = transf(x,y,z)
@@ -79,6 +85,20 @@ class Vector3D(
      */
   val euclidNorm : Float =
     sqrt(cx * cx + cy * cy + cz * cz).toFloat
+
+  def +(v : Vector3D) : Vector3D =
+    new Vector3D(
+      this.cx + v.cx,
+      this.cy + v.cy,
+      this.cz + v.cz
+    )
+
+  def -(v : Vector3D) : Vector3D =
+    new Vector3D(
+      this.cx - v.cx,
+      this.cy - v.cy,
+      this.cz - v.cz
+    )
 
   def angle(v : Vector3D) : Double =
     Vector3D.orientedAngle(this, v)
